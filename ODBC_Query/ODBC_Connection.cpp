@@ -1,16 +1,24 @@
 #include "precompiled.h"
 #include "ODBC_Connection.h"
 
+<<<<<<< HEAD
 ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui, QWidget *parent) : QWidget(parent)
+=======
+ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui)
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 {
 	m_ui = ui;
 
 	m_iCurrentHistoryIndex = 0;
 
+<<<<<<< HEAD
 	m_sLastSelectStatement = QString();
 	m_sCurrentStatement = QString();
 
 	m_pSqlQueryModel = NULL;
+=======
+	m_pQuery = NULL;
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 }
 
 ODBC_Connection::~ODBC_Connection()
@@ -18,7 +26,11 @@ ODBC_Connection::~ODBC_Connection()
 
 }
 
+<<<<<<< HEAD
 bool ODBC_Connection::ConnectToDatabase(bool firstConnect, QString database, QString user, QString password)
+=======
+bool ODBC_Connection::ConnectToDatabase(QString database, QString user, QString password, bool firstConnect)
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 {
 	if (m_db.isOpen())
 		m_db.close();
@@ -65,8 +77,16 @@ bool ODBC_Connection::ConnectToDatabase(bool firstConnect, QString database, QSt
 		m_ui.SQLCommandTextEdit->setText(m_sCurrentStatement);
 		m_ui.SQLLogTextBrowser->setText(m_sLogFile);
 		// reexecute the query if its a select statement
+<<<<<<< HEAD
 		if (m_sLastSelectStatement != "")
 			ExecuteQuery(m_sLastSelectStatement, false);
+=======
+		if (m_pQuery != NULL)
+		{
+			if (m_pQuery->isSelect()) // do not execute it, if its no select statement
+				ExecuteQuery(m_pQuery->executedQuery(), false);
+		}
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 		return true;
 	}
 }
@@ -99,7 +119,10 @@ void ODBC_Connection::LoadTableColumns(QString tableName)
 
 		m_ui.FieldTreeWidget->addTopLevelItem(item);
 	}
+<<<<<<< HEAD
 	query.finish();
+=======
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 	m_ui.FieldTreeWidget->resizeColumnToContents(1);
 	m_ui.FieldTreeWidget->resizeColumnToContents(2);	
 	m_ui.FieldTreeWidget->resizeColumnToContents(3);
@@ -112,21 +135,37 @@ void ODBC_Connection::ExecuteQuery(QString s_query, bool firstExecute)
 	{
 		QTime time;
 		time.start(); // count the time, the query execution takes
+<<<<<<< HEAD
 		QSqlQuery m_pQuery = QSqlQuery(m_db);
 		if (!m_pQuery.exec(s_query))
 		{
 			QString errorText = m_pQuery.lastError().text();
+=======
+		m_pQuery = new QSqlQuery(m_db);
+		if (!m_pQuery->exec(s_query))
+		{
+			QString errorText = m_pQuery->lastError().text();
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 			if (errorText.trimmed() != "" && firstExecute)
 				m_ui.SQLLogTextBrowser->append(QString("<table><tr><td><b>%1</b></td><td><font color='#FF0000'>%2</font></td></tr></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), errorText));
 		}
 		else
 		{
+<<<<<<< HEAD
 			m_pSqlQueryModel = new QSqlQueryModel(this->parent());
 			m_pSqlQueryModel->setQuery(m_pQuery);
 			if (m_pSqlQueryModel->rowCount() != 0)
 			{			
 				QSortFilterProxyModel *pSortModel = new QSortFilterProxyModel(this->parent());
 				pSortModel->setSourceModel(m_pSqlQueryModel);
+=======
+			QSqlQueryModel *pSqlQueryModel = new QSqlQueryModel(this);
+			pSqlQueryModel->setQuery(*m_pQuery);
+			if (pSqlQueryModel->rowCount() != 0)
+			{			
+				QSortFilterProxyModel *pSortModel = new QSortFilterProxyModel(this);
+				pSortModel->setSourceModel(pSqlQueryModel);
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 				m_ui.SQLResultTableView->setModel(pSortModel);
 				m_ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
 				m_ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(m_ui.SQLResultTableView->verticalScrollBar()->minimum());
@@ -134,7 +173,11 @@ void ODBC_Connection::ExecuteQuery(QString s_query, bool firstExecute)
 			}
 			if (firstExecute)
 			{
+<<<<<<< HEAD
 				m_ui.SQLLogTextBrowser->append(QString("<table><tr><td><b>%1</b></td><td>%2</td></tr><tr><td></td><td>%3</td></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), "Query executed successfully after " + QString().setNum(time.elapsed()) + " ms!", QString().setNum(m_pQuery.numRowsAffected()) + " row(s) affected\n"));	
+=======
+				m_ui.SQLLogTextBrowser->append(QString("<table><tr><td><b>%1</b></td><td>%2</td></tr><tr><td></td><td>%3</td></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), "Query executed successfully after " + QString().setNum(time.elapsed()) + " ms!", QString().setNum(m_pQuery->numRowsAffected()) + " row(s) affected\n"));	
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 				if (m_slStatementHistory.count() != 0)
 				{
 					if (m_slStatementHistory.value(m_iCurrentHistoryIndex) != s_query)
@@ -145,6 +188,7 @@ void ODBC_Connection::ExecuteQuery(QString s_query, bool firstExecute)
 				}
 				else
 					m_slStatementHistory << s_query;
+<<<<<<< HEAD
 				if (m_iCurrentHistoryIndex > 0)
 					m_ui.LeftToolButton->setEnabled(true);
 				m_ui.RightToolButton->setEnabled(true);
@@ -153,6 +197,10 @@ void ODBC_Connection::ExecuteQuery(QString s_query, bool firstExecute)
 				m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 				if (m_pQuery.isSelect())
 					m_sLastSelectStatement = m_pQuery.executedQuery();
+=======
+				m_ui.RightToolButton->setEnabled(true);
+				m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 			}
 		}
 	}
@@ -187,6 +235,7 @@ void ODBC_Connection::HandleLeftRightButton(bool directionRight)
 		m_ui.RightToolButton->setDisabled(true);
 }
 
+<<<<<<< HEAD
 void ODBC_Connection::HandleSQLCommandTextChanged()
 {
 	if (m_ui.SQLCommandTextEdit->toPlainText() != "")
@@ -195,11 +244,14 @@ void ODBC_Connection::HandleSQLCommandTextChanged()
 		m_ui.ExecuteToolButton->setDisabled(true);
 }
 
+=======
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 void ODBC_Connection::OpenConnection(QString connectionName)
 {
 	m_db = QSqlDatabase::addDatabase("QODBC", connectionName);
 	m_sConnectionName = m_db.connectionName();
 
+<<<<<<< HEAD
 	RestoreGui();
 }
 
@@ -208,12 +260,15 @@ void ODBC_Connection::RestoreGui()
 	m_ui.SQLCommandTextEdit->setText(m_sCurrentStatement);
 	m_ui.SQLLogTextBrowser->setText(m_sLogFile);
 
+=======
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 	if (m_iCurrentHistoryIndex < m_slStatementHistory.count())
 		m_ui.SQLCommandTextEdit->setText(m_slStatementHistory.value(m_iCurrentHistoryIndex));
 	else
 		m_ui.SQLCommandTextEdit->setText("");
 	m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 
+<<<<<<< HEAD
 	if (m_ui.SQLCommandTextEdit->toPlainText() == "")
 		m_ui.ExecuteToolButton->setDisabled(true);
 
@@ -260,6 +315,26 @@ void ODBC_Connection::CloseConnection()
 		m_pSqlQueryModel = NULL;
 	}
 
+=======
+	if (m_iCurrentHistoryIndex == 0)
+		m_ui.LeftToolButton->setDisabled(true);
+	else
+		m_ui.LeftToolButton->setEnabled(true);
+
+	if (m_iCurrentHistoryIndex == m_slStatementHistory.count() && m_slStatementHistory.count() != 0)
+		m_ui.RightToolButton->setDisabled(true);
+	else
+		m_ui.RightToolButton->setEnabled(true);
+}
+
+void ODBC_Connection::CloseConnection()
+{
+	m_sCurrentStatement = m_ui.SQLCommandTextEdit->toPlainText();
+	m_sLogFile = m_ui.SQLLogTextBrowser->toHtml();
+	m_ui.SQLResultTableView->setModel(NULL);
+	if (m_pQuery != NULL)
+		m_pQuery->finish();
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 	QString connection;
     connection = m_db.connectionName();
     m_db.close();

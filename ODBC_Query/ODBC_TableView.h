@@ -47,11 +47,16 @@ class ODBC_TableView : public QTableView
 
 				QClipboard *clipboard = QApplication::clipboard();
 				clipboard->setText(copy_table);
+<<<<<<< HEAD
 
 				qDebug() << clipboard->text();
 			}
 			else
 				QTableView::keyPressEvent(event);
+=======
+			}
+			QTableView::keyPressEvent(event);
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 		};
 };
 

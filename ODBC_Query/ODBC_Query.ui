@@ -20,6 +20,7 @@
   <widget class="QWidget" name="CentralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
+<<<<<<< HEAD
      <widget class="QToolButton" name="AddConnectionToolButton">
       <property name="toolTip">
        <string>New connection</string>
@@ -101,6 +102,8 @@
      </widget>
     </item>
     <item>
+=======
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
      <widget class="QLabel" name="StatusLabel">
       <property name="text">
        <string/>
@@ -385,6 +388,7 @@
     <property name="title">
      <string>Connections</string>
     </property>
+<<<<<<< HEAD
     <widget class="QMenu" name="OpenConnectionsMenu">
      <property name="enabled">
       <bool>false</bool>
@@ -406,12 +410,29 @@
     <addaction name="NewConnectionAction"/>
     <addaction name="OpenConnectionsMenu"/>
     <addaction name="CloseAllConnectionsAction"/>
+=======
+    <widget class="QMenu" name="MenuOpen_connections">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Open connections...</string>
+     </property>
+    </widget>
+    <addaction name="ActionNew_Connection"/>
+    <addaction name="MenuOpen_connections"/>
+    <addaction name="ActionClose_all_connections"/>
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
    </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuConnections"/>
   </widget>
   <widget class="QStatusBar" name="StatusBar"/>
+<<<<<<< HEAD
   <widget class="QToolBar" name="ToolBar">
+=======
+  <widget class="QToolBar" name="toolBar">
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -426,6 +447,7 @@
    <property name="text">
     <string>Exit</string>
    </property>
+<<<<<<< HEAD
    <property name="toolTip">
     <string>Close program</string>
    </property>
@@ -459,6 +481,18 @@
    <property name="statusTip">
     <string>Close all connections</string>
    </property>
+=======
+  </action>
+  <action name="ActionNew_Connection">
+   <property name="text">
+    <string>New connection</string>
+   </property>
+  </action>
+  <action name="ActionClose_all_connections">
+   <property name="text">
+    <string>Close all connections</string>
+   </property>
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
   </action>
   <action name="actionTest">
    <property name="text">

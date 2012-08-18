@@ -17,7 +17,11 @@ class ODBC_Query : public QMainWindow
 	private:	
 		void InitGui();
 		void ResetGui();
+<<<<<<< HEAD
 		void DisableQueryToolbar();
+=======
+		void SetQueryToolbar(bool activate);
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 		bool eventFilter(QObject *object, QEvent *event);
 
 		Ui::ODBC_QueryClass ui;
@@ -31,9 +35,14 @@ class ODBC_Query : public QMainWindow
 		void TableItemClicked(QTreeWidgetItem *item, int column);
 		void Exit();
 		void NewConnection();
+<<<<<<< HEAD
 		void CloseAllConnections(bool close = false);
 		void ConnectionsClicked(QAction *action);
 		void SQLCommandTextChanged();
+=======
+		void CloseAllConnections();
+		void ConnectionsClicked(QAction *action);
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 };
 
 #endif // ODBC_QUERY_H

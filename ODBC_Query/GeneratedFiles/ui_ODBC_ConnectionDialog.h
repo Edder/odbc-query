@@ -1,7 +1,11 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_ConnectionDialog.ui'
 **
+<<<<<<< HEAD
 ** Created: Sat 18. Aug 10:36:45 2012
+=======
+** Created: Fri 17. Aug 09:25:48 2012
+>>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
