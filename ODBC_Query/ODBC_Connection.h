@@ -6,10 +6,9 @@
 
 class ODBC_Connection : public QWidget
 {
-	Q_OBJECT
+	//Q_OBJECT
 
 	public:
-<<<<<<< HEAD
 		ODBC_Connection(Ui::ODBC_QueryClass ui, QWidget *parent = 0);
 		~ODBC_Connection();
 
@@ -21,16 +20,6 @@ class ODBC_Connection : public QWidget
 		void OpenConnection(QString connectionName);
 		void RestoreGui();
 		void SaveGui();
-=======
-		ODBC_Connection(Ui::ODBC_QueryClass ui);
-		~ODBC_Connection();
-
-		bool ConnectToDatabase(QString database, QString user, QString password, bool firstConnect); 
-		void LoadTableColumns(QString tableName);
-		void ExecuteQuery(QString query, bool firstExecute);
-		void HandleLeftRightButton(bool directionRight);
-		void OpenConnection(QString connectionName);
->>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 		void CloseConnection();
 		QString getConnectionName() { return m_sConnectionName; };
 
@@ -41,14 +30,10 @@ class ODBC_Connection : public QWidget
 		QString m_sConnectionName;
 		Ui::ODBC_QueryClass m_ui;
 		QSqlDatabase m_db;
-<<<<<<< HEAD
+		QSqlQuery *m_pQuery;
 		QSqlQueryModel *m_pSqlQueryModel;
 		QString m_sCurrentStatement;
 		QString m_sLastSelectStatement;
-=======
-		QSqlQuery *m_pQuery;
-		QString m_sCurrentStatement;
->>>>>>> 930f78f550971e678d62656160dc4b72ba836ef9
 		QStringList m_slStatementHistory;
 		int m_iCurrentHistoryIndex;
 		QString m_sLoadedTable;
