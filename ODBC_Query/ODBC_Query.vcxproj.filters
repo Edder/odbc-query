@@ -85,6 +85,9 @@
     <ClInclude Include="ODBC_CustomSyntaxHighlighter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ODBC_Query.h">
@@ -108,5 +111,8 @@
     <CustomBuild Include="ODBC_ConnectionDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ODBC_Query.rc" />
   </ItemGroup>
 </Project>

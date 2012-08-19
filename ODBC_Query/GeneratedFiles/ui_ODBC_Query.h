@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_Query.ui'
 **
-** Created: Sat 18. Aug 11:18:22 2012
+** Created: Sun 19. Aug 10:26:13 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

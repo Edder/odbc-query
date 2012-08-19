@@ -36,10 +36,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						setFormat(start, (text.length() - i), Qt::red);
 					}
 
-					for (int j = 0, count = blueKeywords.count(); j < count; j++)
+					for (int j = 0, count = keywords.count(); j < count; j++)
 					{
-						int length = blueKeywords.value(j).length();
-						if (text.mid(i, length).toUpper() == blueKeywords.value(j)) 
+						int length = keywords.value(j).length();
+						if (text.mid(i, length).toUpper() == keywords.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -54,10 +54,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						}
 					}
 
-					for (int j = 0, count = magentaKeywords.count(); j < count; j++)
+					for (int j = 0, count = functions.count(); j < count; j++)
 					{
-						int length = magentaKeywords.value(j).length();
-						if (text.mid(i, length).toUpper() == magentaKeywords.value(j)) 
+						int length = functions.value(j).length();
+						if (text.mid(i, length).toUpper() == functions.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -71,17 +71,55 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 							}
 						}
 					}
+
+					for (int j = 0, count = operators.count(); j < count; j++)
+					{
+						int length = operators.value(j).length();
+						if (text.mid(i, length).toUpper() == operators.value(j)) 
+						{
+							if (i == 0)
+							{
+								if (text.mid((i + length), 1) == " ")
+									setFormat(i, length, Qt::green);	
+							}
+							else
+							{
+								if (text.mid((i - 1), 1) == " " && text.mid((i + length), 1) == " ")
+									setFormat(i, length, Qt::green);	
+							}
+						}
+					}
 				}
 			}  
 		};
 
 		void Init()
 		{
-			blueKeywords << "SELECT" << "UPDATE" << "INSERT" << "DELETE" << "FROM" << "WHERE" << "AS";
-			magentaKeywords << "COUNT";
+			keywords << "ABSOLUTE" << "ACTION" << "ADD" << "AFTER" << "ALTER" << "AS" << "ASC" << "AT" << "AUTHORIZATION" << "BEGIN" << "BIGINT" <<
+							"BINARY" << "BIT" << "BY" << "CASCADE" << "CHAR" << "CHARACTER" << "CHECK" << "CHECKPOINT" << "CLOSE" << "COLLATE" <<
+							"COLUMN" << "COMMIT" << "COMMITTED" << "CONNECT" << "CONNECTION" << "CONSTRAINT" << "CONTAINS" << "CONTINUE" <<
+							"CREATE" << "CUBE" << "CURRENT" << "CURRENT_DATE" << "CURRENT_TIME" << "CURSOR" << "DATABASE" << "DATE" <<
+							"DEALLOCATE" << "DEC" << "DECIMAL" << "DECLARE" << "DEFAULT" << "DELETE" << "DESC" << "DISTINCT" << "DOUBLE" << "DROP" <<
+							"DYNAMIC" << "ELSE" << "END" << "END-EXEC" << "ESCAPE" << "EXCEPT" << "EXEC" << "EXECUTE" << "FALSE" << "FETCH" << "FIRST" <<
+							"FLOAT" << "FOR" << "FORCE" << "FOREIGN" << "FORWARD" << "FREE" << "FROM" << "FULL" << "FUNCTION" << "GLOBAL" << "GOTO" << "GRANT" <<
+							"GROUP" << "GROUPING" << "HAVING" << "HOUR" << "IGNORE" << "INDEX" << "INNER" << "INSENSITIVE" << "INSERT" << "INSTEAD" <<
+							"INT" << "INTEGER" << "INTERSECT" << "INTO" << "IS" << "ISOLATION" << "KEY" << "LAST" << "LEVEL" << "LOAD" << "LOCAL" << "MAX" << "MIN" <<
+							"MINUTE" << "MODIFY" << "MOVE" << "NAME" << "NATIONAL" << "NCHAR" << "NEXT" << "NO" << "NUMERIC" << "OF" << "OFF" << "ON" << "ONLY" <<
+							"OPEN" << "OPTION" << "ORDER" << "OUT" << "OUTPUT" << "PARTIAL" << "PASSWORD" << "PRECISION" << "PREPARE" << "PRIMARY" <<
+							"PRIOR" << "PRIVILEGES" << "PROCEDURE" << "PUBLIC" << "READ" << "REAL" << "REFERENCES" << "RELATIVE" << "REPEATABLE" <<
+							"RESTRICT" << "RETURN" << "RETURNS" << "REVOKE" << "ROLLBACK" << "ROLLUP" << "ROWS" << "RULE" << "SCHEMA" << "SCROLL" <<
+							"SECOND" << "SECTION" << "SELECT" << "SEQUENCE" << "SERIALIZABLE" << "SET" << "SIZE" << "SMALLINT" << "STATIC" <<
+							"STATISTICS" << "TABLE" << "TEMP" << "TEMPORARY" << "THEN" << "TIME" << "TIMESTAMP" << "TO" << "TOP" << "TRANSACTION" <<
+							"TRANSLATION" << "TRIGGER" << "TRUE" << "TRUNCATE" << "UNCOMMITTED" << "UNION" << "UNIQUE" << "UPDATE" << "VALUES" <<
+							"VARCHAR" << "VARYING" << "VIEW" << "WHEN" << "WHERE" << "WITH" << "WORK";
+			functions << "ABS" << "AVG" << "CASE" << "CAST" << "COALESCE" << "CONVERT" << "COUNT" << "CURRENT_TIMESTAMP" << 
+							"CURRENT_USER" << "DAY" << "ISNULL" << "LEFT" << "LOWER" << "MONTH" << "NULLIF" << "REPLACE" << "RIGHT" << 
+							"SESSION_USER" << "SPACE" << "SUBSTRING" << "SUM" << "SYSTEM_USER" << "UPPER" << "USER" << "YEAR";
+			operators << "ALL" << "AND" << "ANY" << "BETWEEN" << "CROSS" << "IN" << "JOIN" << "LIKE" << "NOT" << "NULL" << "OR" << "OUTER" << "SOME";
 		}
 
 	private:
-		QStringList blueKeywords;
-		QStringList magentaKeywords;
+		QStringList keywords;
+		QStringList functions;
+		QStringList operators;
 };
