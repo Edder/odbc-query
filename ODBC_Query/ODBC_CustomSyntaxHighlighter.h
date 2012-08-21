@@ -43,12 +43,12 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						{
 							if (i == 0)
 							{
-								if (text.mid((i + length), 1) == " ")
+								if (text.mid((i + length), 1) == " " || text.length() == length)
 									setFormat(i, length, Qt::blue);	
 							}
 							else
 							{
-								if (text.mid((i - 1), 1) == " " && text.mid((i + length), 1) == " ")
+								if (text.mid((i - 1), 1) == " " && text.mid((i + length), 1) == " " || text.mid((i - 1), 1) == " " && text.length() == (i + length))
 									setFormat(i, length, Qt::blue);	
 							}
 						}
@@ -79,12 +79,12 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						{
 							if (i == 0)
 							{
-								if (text.mid((i + length), 1) == " ")
+								if (text.mid((i + length), 1) == " " || text.length() == length)
 									setFormat(i, length, Qt::green);	
 							}
 							else
 							{
-								if (text.mid((i - 1), 1) == " " && text.mid((i + length), 1) == " ")
+								if (text.mid((i - 1), 1) == " " && text.mid((i + length), 1) == " " || text.mid((i - 1), 1) == " " && text.length() == (i + length))
 									setFormat(i, length, Qt::green);	
 							}
 						}

@@ -14,12 +14,14 @@ class ODBC_ConnectionDialog : public QDialog
 		QString getUsername() { return m_sEnteredUsername; };
 		QString getPassword() { return m_sEnteredPassword; };
 		bool isSystemDSN() { return m_bSystemDSNSelected; };
+		bool isValid() { return m_bChoiceMade; };
 
 	private:
 		Ui::Dialog ui;
 		QString m_sSelectedDatabase;
 		QString m_sEnteredUsername;
 		QString m_sEnteredPassword;
+		bool m_bChoiceMade;
 		bool m_bSystemDSNSelected;
 
 	private slots:

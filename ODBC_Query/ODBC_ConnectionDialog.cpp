@@ -5,6 +5,8 @@ void ODBC_ConnectionDialog::Init()
 {
 	ui.setupUi(this);
 
+	m_bChoiceMade = false;
+
 	QObject::connect(ui.ConnectButton, SIGNAL(clicked()), SLOT(ConnectButtonClicked()));
 	QObject::connect(ui.CancelButton, SIGNAL(clicked()), SLOT(CancelButtonClicked()));
 	QObject::connect(ui.SystemDSNTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(SystemDSNitemClicked(QTreeWidgetItem*, int)));
@@ -36,6 +38,7 @@ void ODBC_ConnectionDialog::ConnectButtonClicked()
 		QMessageBox::information(this, "Database selection", "You need to select a ODBC Data Source to connect!", QMessageBox::Ok);
 		return;
 	}
+
 	m_sEnteredUsername = ui.UsernameLineEdit->text();
 	m_sEnteredPassword = ui.PasswordLineEdit->text();
 
@@ -47,19 +50,16 @@ void ODBC_ConnectionDialog::ConnectButtonClicked()
 		Login.setValue("password", m_sEnteredPassword);
 	}
 	else
-	{
 		Login.remove("");
-	}
 	Login.endGroup();
+
+	m_bChoiceMade = true;
 
 	close();
 }
 
 void ODBC_ConnectionDialog::CancelButtonClicked()
 {
-	m_sSelectedDatabase = QString();
-	m_sEnteredUsername = QString();
-	m_sEnteredPassword = QString();
 	close();
 }
 

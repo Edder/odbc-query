@@ -6,13 +6,11 @@
 
 class ODBC_Connection : public QWidget
 {
-	//Q_OBJECT
-
 	public:
 		ODBC_Connection(Ui::ODBC_QueryClass ui, QWidget *parent = 0);
 		~ODBC_Connection();
 
-		bool ConnectToDatabase(bool firstConnect, QString database = NULL, QString user = NULL, QString password = NULL); 
+		bool ConnectToDatabase(bool reconnect, QString database = NULL, QString user = NULL, QString password = NULL); 
 		void LoadTableColumns(QString tableName);
 		void ExecuteQuery(QString query, bool firstExecute);
 		void HandleLeftRightButton(bool directionRight);
