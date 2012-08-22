@@ -17,6 +17,7 @@ class Logging
 		static Logging* getInstance();
 
 		bool Init();
+		void Close();
 		void WriteLog(int logtype, QString text);
 
 	private:

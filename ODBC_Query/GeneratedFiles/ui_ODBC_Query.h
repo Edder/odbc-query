@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_Query.ui'
 **
-** Created: Tue 21. Aug 21:05:55 2012
+** Created: Wed 22. Aug 21:22:54 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -170,6 +170,7 @@ public:
         MainHorizontalSplitter->addWidget(HorizontalSplitter);
         VerticalSplitter = new QSplitter(MainHorizontalSplitter);
         VerticalSplitter->setObjectName(QString::fromUtf8("VerticalSplitter"));
+        VerticalSplitter->setCursor(QCursor(Qt::ArrowCursor));
         VerticalSplitter->setOrientation(Qt::Vertical);
         SQLResultTableView = new ODBC_TableView(VerticalSplitter);
         SQLResultTableView->setObjectName(QString::fromUtf8("SQLResultTableView"));
@@ -177,6 +178,7 @@ public:
         font.setPointSize(8);
         font.setKerning(true);
         SQLResultTableView->setFont(font);
+        SQLResultTableView->viewport()->setProperty("cursor", QVariant(QCursor(Qt::ArrowCursor)));
         SQLResultTableView->setFrameShape(QFrame::StyledPanel);
         SQLResultTableView->setFrameShadow(QFrame::Sunken);
         SQLResultTableView->setMidLineWidth(1);
@@ -214,6 +216,11 @@ public:
         Line->setObjectName(QString::fromUtf8("Line"));
         Line->setWindowModality(Qt::NonModal);
         Line->setEnabled(true);
+        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(Line->sizePolicy().hasHeightForWidth());
+        Line->setSizePolicy(sizePolicy1);
         Line->setFrameShape(QFrame::VLine);
         Line->setFrameShadow(QFrame::Sunken);
 
@@ -239,6 +246,8 @@ public:
         RightToolButton = new QToolButton(horizontalLayoutWidget);
         RightToolButton->setObjectName(QString::fromUtf8("RightToolButton"));
         RightToolButton->setEnabled(false);
+        sizePolicy.setHeightForWidth(RightToolButton->sizePolicy().hasHeightForWidth());
+        RightToolButton->setSizePolicy(sizePolicy);
         QIcon icon6;
         icon6.addFile(QString::fromUtf8(":/ODBC_Query/Resources/right_arrow.png"), QSize(), QIcon::Normal, QIcon::Off);
         RightToolButton->setIcon(icon6);
@@ -249,6 +258,11 @@ public:
 
         Line_2 = new QFrame(horizontalLayoutWidget);
         Line_2->setObjectName(QString::fromUtf8("Line_2"));
+        sizePolicy1.setHeightForWidth(Line_2->sizePolicy().hasHeightForWidth());
+        Line_2->setSizePolicy(sizePolicy1);
+        Line_2->setMaximumSize(QSize(16777215, 16777215));
+        Line_2->setSizeIncrement(QSize(0, 0));
+        Line_2->setBaseSize(QSize(0, 0));
         Line_2->setFrameShape(QFrame::VLine);
         Line_2->setFrameShadow(QFrame::Sunken);
 

@@ -25,7 +25,7 @@ bool Logging::Init()
 
 	QDateTime timestamp = QDateTime::currentDateTime();
 	mFile.setFileName(QString("logs/%1 %2.log").arg(timestamp.toString("dd.MM.yyyy"), QCoreApplication::applicationName()));
-	if (mFile.open(QIODevice::WriteOnly | QIODevice::Append))
+	if (mFile.open(QIODevice::ReadWrite | QIODevice::Append |QIODevice::Text))
 	{
 		if (mFile.size() != 0)
 		{
@@ -37,6 +37,16 @@ bool Logging::Init()
 	}
 	else
 		return false;
+}
+
+void Logging::Close()
+{
+	if (!m_bInitialized)
+		return;
+
+	mFile.close();
+
+	m_bInitialized = false;
 }
 
 void Logging::WriteLog(int logtype, QString text)

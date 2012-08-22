@@ -18,6 +18,7 @@ class ODBC_Query : public QMainWindow
 		void InitGui();
 		void ResetGui();
 		void DisableQueryToolbar();
+		void SwitchToConnection(ODBC_Connection *connection, QString newConnectionName);
 		bool eventFilter(QObject *object, QEvent *event);
 
 		Ui::ODBC_QueryClass ui;

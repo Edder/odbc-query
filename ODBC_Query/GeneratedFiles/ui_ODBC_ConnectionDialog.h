@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_ConnectionDialog.ui'
 **
-** Created: Tue 21. Aug 21:05:55 2012
+** Created: Wed 22. Aug 21:22:54 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -16,12 +16,12 @@
 #include <QtGui/QButtonGroup>
 #include <QtGui/QCheckBox>
 #include <QtGui/QDialog>
+#include <QtGui/QFormLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QVBoxLayout>
 
@@ -35,15 +35,12 @@ public:
     QTreeWidget *SystemDSNTreeWidget;
     QLabel *UserDSNLabel;
     QTreeWidget *UserDSNTreeWidget;
-    QHBoxLayout *HorizontalLayout_2;
+    QFormLayout *formLayout;
     QLabel *UsernameLabel;
     QLineEdit *UsernameLineEdit;
-    QSpacerItem *horizontalSpacer;
-    QHBoxLayout *horizontalLayout;
     QLabel *PasswordLabel;
     QLineEdit *PasswordLineEdit;
     QCheckBox *RememberCheckBox;
-    QSpacerItem *horizontalSpacer_2;
     QHBoxLayout *HorizontalLayout;
     QPushButton *ConnectButton;
     QPushButton *CancelButton;
@@ -99,16 +96,17 @@ public:
 
         verticalLayout->addWidget(UserDSNTreeWidget);
 
-        HorizontalLayout_2 = new QHBoxLayout();
-        HorizontalLayout_2->setObjectName(QString::fromUtf8("HorizontalLayout_2"));
+        formLayout = new QFormLayout();
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
         UsernameLabel = new QLabel(Dialog);
         UsernameLabel->setObjectName(QString::fromUtf8("UsernameLabel"));
 
-        HorizontalLayout_2->addWidget(UsernameLabel);
+        formLayout->setWidget(0, QFormLayout::LabelRole, UsernameLabel);
 
         UsernameLineEdit = new QLineEdit(Dialog);
         UsernameLineEdit->setObjectName(QString::fromUtf8("UsernameLineEdit"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(UsernameLineEdit->sizePolicy().hasHeightForWidth());
@@ -118,21 +116,12 @@ public:
         UsernameLineEdit->setEchoMode(QLineEdit::Normal);
         UsernameLineEdit->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
 
-        HorizontalLayout_2->addWidget(UsernameLineEdit);
+        formLayout->setWidget(0, QFormLayout::FieldRole, UsernameLineEdit);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        HorizontalLayout_2->addItem(horizontalSpacer);
-
-
-        verticalLayout->addLayout(HorizontalLayout_2);
-
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         PasswordLabel = new QLabel(Dialog);
         PasswordLabel->setObjectName(QString::fromUtf8("PasswordLabel"));
 
-        horizontalLayout->addWidget(PasswordLabel);
+        formLayout->setWidget(1, QFormLayout::LabelRole, PasswordLabel);
 
         PasswordLineEdit = new QLineEdit(Dialog);
         PasswordLineEdit->setObjectName(QString::fromUtf8("PasswordLineEdit"));
@@ -140,19 +129,15 @@ public:
         PasswordLineEdit->setSizePolicy(sizePolicy);
         PasswordLineEdit->setEchoMode(QLineEdit::Password);
 
-        horizontalLayout->addWidget(PasswordLineEdit);
+        formLayout->setWidget(1, QFormLayout::FieldRole, PasswordLineEdit);
 
         RememberCheckBox = new QCheckBox(Dialog);
         RememberCheckBox->setObjectName(QString::fromUtf8("RememberCheckBox"));
 
-        horizontalLayout->addWidget(RememberCheckBox);
-
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout->addItem(horizontalSpacer_2);
+        formLayout->setWidget(2, QFormLayout::FieldRole, RememberCheckBox);
 
 
-        verticalLayout->addLayout(horizontalLayout);
+        verticalLayout->addLayout(formLayout);
 
         HorizontalLayout = new QHBoxLayout();
         HorizontalLayout->setObjectName(QString::fromUtf8("HorizontalLayout"));
@@ -181,7 +166,7 @@ public:
         SystemDSNLabel->setText(QApplication::translate("Dialog", "System DSN:", 0, QApplication::UnicodeUTF8));
         UserDSNLabel->setText(QApplication::translate("Dialog", "User DSN:", 0, QApplication::UnicodeUTF8));
         UsernameLabel->setText(QApplication::translate("Dialog", "Username:", 0, QApplication::UnicodeUTF8));
-        PasswordLabel->setText(QApplication::translate("Dialog", "Password: ", 0, QApplication::UnicodeUTF8));
+        PasswordLabel->setText(QApplication::translate("Dialog", "Password:", 0, QApplication::UnicodeUTF8));
         RememberCheckBox->setText(QApplication::translate("Dialog", "Remember", 0, QApplication::UnicodeUTF8));
         ConnectButton->setText(QApplication::translate("Dialog", "Connect", 0, QApplication::UnicodeUTF8));
         CancelButton->setText(QApplication::translate("Dialog", "Cancel", 0, QApplication::UnicodeUTF8));

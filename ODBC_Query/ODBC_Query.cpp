@@ -11,8 +11,7 @@ ODBC_Query::ODBC_Query(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 	QCoreApplication::setApplicationName("ODBC Query");
 
 	Logging::getInstance()->Init();
-	Logging::getInstance()->WriteLog(INFORMATION, QString("Starting %1...").arg(QCoreApplication::applicationName()));
-
+	Logging::getInstance()->WriteLog(INFORMATION, QString("Starting %1 (PID: %2)...").arg(QCoreApplication::applicationName(), QString().setNum(QCoreApplication::applicationPid())));
 	InitGui();
 
 	m_pCurrentConnection = NULL;
@@ -27,6 +26,7 @@ ODBC_Query::~ODBC_Query()
 	m_pCurrentConnection = NULL;
 
 	Logging::getInstance()->WriteLog(INFORMATION, QString("Shutting down %1").arg(QCoreApplication::applicationName()));
+	Logging::getInstance()->Close();
 }
 
 void ODBC_Query::InitGui()
@@ -35,7 +35,7 @@ void ODBC_Query::InitGui()
 
 	// set the default sizes of the splitter
 	QList<int> list;
-	list << 1000 << 50 << 100 << 100;
+	list << 1000 << 26 << 200 << 200;
 	ui.VerticalSplitter->setSizes(list);
 	list.clear();
 	list << 500 << 1000;
@@ -102,13 +102,49 @@ void ODBC_Query::DisableQueryToolbar()
 	if (ui.CurrentStatementLabel->isEnabled())
 		ui.CurrentStatementLabel->setDisabled(true);
 
-	if (m_pCurrentConnection == NULL)
-	{
-		if (ui.RightToolButton->isEnabled())
-			ui.RightToolButton->setDisabled(true);
+	//if (m_pCurrentConnection == NULL)
+	//{
+	if (ui.RightToolButton->isEnabled())
+		ui.RightToolButton->setDisabled(true);
 
-		if (ui.LeftToolButton->isEnabled())
-			ui.LeftToolButton->setDisabled(true);
+	if (ui.LeftToolButton->isEnabled())
+		ui.LeftToolButton->setDisabled(true);
+	//}
+}
+
+void ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConnectionName)
+{
+	if (connection == NULL)
+	{
+		Logging::getInstance()->WriteLog(CRITICAL, "Null pointer at SwitchToConnection() in connection");
+		#ifdef _DEBUG
+		qDebug() << "Null pointer at SwitchToConnection() in connection";
+		#endif
+		return;
+	}
+
+	m_pCurrentConnection = connection;
+	m_pCurrentConnection->OpenConnection(newConnectionName);
+	m_pCurrentConnection->ConnectToDatabase(true);
+	QAction *pAction;
+	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
+	for (int i = 0, count = lActions.count(); i < count; i++)
+	{	
+		pAction = lActions.value(i);
+		if (pAction != NULL)
+		{
+			if (pAction->text() != newConnectionName)
+				pAction->setChecked(false);
+			else
+				pAction->setChecked(true);
+		}
+		else
+		{
+			Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at SwitchToConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+			#ifdef _DEBUG
+			qDebug() << QString("Null pointer at SwitchToConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
+			#endif
+		}
 	}
 }
 
@@ -157,14 +193,17 @@ void ODBC_Query::NewConnection()
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 	QString sNewConnectionName = QString("%1 (%2)").arg(sDatabase, connectiondialog.isSystemDSN() ? "System" : "User");
-	// check whether we already have a connection with that name
+	// check whether we already have a connection with that name and switch to it if yes
 	for (int i = 0, count = m_lConnections.count(); i < count; i++)
 	{
-		ODBC_Connection *connection = m_lConnections.value(i);
-		if (connection != NULL)
+		ODBC_Connection *pConnection = m_lConnections.value(i);
+		if (pConnection != NULL)
 		{
-			if (connection->getConnectionName() == sNewConnectionName)
+			if (pConnection->getConnectionName() == sNewConnectionName)
 			{
+				if (m_pCurrentConnection != NULL)
+					m_pCurrentConnection->CloseConnection();
+				SwitchToConnection(pConnection, sNewConnectionName);
 				setCursor(Qt::ArrowCursor);
 				return;
 			}
@@ -184,8 +223,8 @@ void ODBC_Query::NewConnection()
 	// and connect to the dsn
 	if (m_pCurrentConnection->ConnectToDatabase(false, sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword()))
 	{
-		// set the status label
-		ui.StatusLabel->setText(QString("Connected to %1").arg(sNewConnectionName));
+		//// set the status label
+		//ui.StatusLabel->setText(QString("Connected to %1").arg(sNewConnectionName));
 		m_lConnections.append(m_pCurrentConnection);
 		// add a new action with the connectionName
 		QAction *pAction = new QAction(sNewConnectionName, this);
@@ -199,11 +238,22 @@ void ODBC_Query::NewConnection()
 		pMenu->addAction("Disconnect");
 		// set the menu to the action
 		pAction->setMenu(pMenu);
-		for (int i = 0, count = ui.OpenConnectionsMenu->actions().count(); i < count; i++)
+		QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
+		for (int i = 0, count = lActions.count(); i < count; i++)
 		{
-			QAction *pAction = ui.OpenConnectionsMenu->actions().value(i);
-			if (pAction->text() != sNewConnectionName)
-				pAction->setChecked(false);
+			pAction = lActions.value(i);
+			if (pAction != NULL)
+			{
+				if (pAction->text() != sNewConnectionName)
+					pAction->setChecked(false);
+			}
+			else
+			{
+				Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at NewConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+				#ifdef _DEBUG
+				qDebug() << QString("Null pointer at NewConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
+				#endif
+			}
 		}
 		if (!ui.OpenConnectionsMenu->isEnabled())
 			ui.OpenConnectionsMenu->setEnabled(true);
@@ -245,9 +295,9 @@ void ODBC_Query::CloseAllConnections(bool close)
 		}
 		else
 		{
-			Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1").arg(QString().setNum(i)));
+			Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 			#ifdef _DEBUG
-			qDebug() << QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1").arg(QString().setNum(i));
+			qDebug() << QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 			#endif
 		}
 	}
@@ -289,58 +339,11 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 						if (m_pCurrentConnection->getConnectionName() != sOldConnectionName)
 						{
 							m_pCurrentConnection->CloseConnection();
-							m_pCurrentConnection = pConnection;
-							m_pCurrentConnection->OpenConnection(sNewConnectionName);
-							m_pCurrentConnection->ConnectToDatabase(true);
-							QAction *pAction;
-							QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
-							for (int j = 0, count = lActions.count(); j < count; j++)
-							{	
-								pAction = lActions.value(j);
-								if (pAction != NULL)
-								{
-									if (pAction->text() != sNewConnectionName)
-										pAction->setChecked(false);
-									else
-										pAction->setChecked(true);
-								}
-								else
-								{
-									Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in lActions at j = %1, count = %2").arg(QString().setNum(j), QString().setNum(count)));
-									#ifdef _DEBUG
-									qDebug() << QString("Null pointer at ConnectionsClicked() in lActions at j = %1, count = %2").arg(QString().setNum(j), QString().setNum(count));
-									#endif
-								}
-
-							}
+							SwitchToConnection(pConnection, sNewConnectionName);
 						}
 					}
 					else
-					{
-						m_pCurrentConnection = pConnection;
-						m_pCurrentConnection->OpenConnection(sNewConnectionName);
-						m_pCurrentConnection->ConnectToDatabase(true);
-						QAction *pAction2;
-						QList<QAction*> lActions2 = ui.OpenConnectionsMenu->actions();
-						for (int k = 0, count = lActions2.count(); k < count; k++)
-						{	
-							pAction2 = lActions2.value(k);
-							if (pAction2 != NULL)
-							{
-								if (pAction2->text() != sNewConnectionName)
-									pAction2->setChecked(false);
-								else
-									pAction2->setChecked(true);
-							}
-							else
-							{
-								Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in lActions2 at k = %1, count = %2").arg(QString().setNum(k), QString().setNum(count)));
-								#ifdef _DEBUG
-								qDebug() << QString("Null pointer at ConnectionsClicked() in lActions2 at k = %1, count = %2").arg(QString().setNum(k), QString().setNum(count));
-								#endif
-							}
-						}
-					}
+						SwitchToConnection(pConnection, sNewConnectionName);
 					if (m_pCurrentConnection != NULL)
 						Logging::getInstance()->WriteLog(INFORMATION, QString("Switched connection, current connection \"%1\"").arg(m_pCurrentConnection->getConnectionName()));
 				}
@@ -370,19 +373,19 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 
 			}
 
-			bool foundConnection = false;
+			bool bCurrentConnection = false;
 			if (m_pCurrentConnection != NULL)
 			{
 				if (m_pCurrentConnection->getConnectionName() == sConnectionNameToClose) // is it the current connection we need to close?
 				{
 					m_lConnections.removeOne(m_pCurrentConnection);
-					ui.OpenConnectionsMenu->removeAction(action);
+					ui.OpenConnectionsMenu->removeAction(pAction);
 					m_pCurrentConnection->CloseConnection();
 					delete m_pCurrentConnection;
 					m_pCurrentConnection = NULL;
-					Logging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed").arg(sConnectionNameToClose));
+					Logging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed, it was the current connection").arg(sConnectionNameToClose));
 					ResetGui();
-					foundConnection = true;
+					bCurrentConnection = true;
 				}
 			}
 			else
@@ -393,7 +396,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 				#endif
 			}
 
-			if (!foundConnection)
+			if (!bCurrentConnection)
 			{
 				// nope, we have to iterate through all connections
 				for (int i = 0, count = m_lConnections.count(); i < count; i++)
@@ -406,17 +409,18 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 							continue;
 
 						m_lConnections.removeAt(i);
-						ui.OpenConnectionsMenu->removeAction(action);
+						ui.OpenConnectionsMenu->removeAction(pAction);
 						pConnection->CloseConnection();
 						delete pConnection;
 						pConnection = NULL;
-						Logging::getInstance()->WriteLog(INFORMATION, QString("Connection %1 closed").arg(sConnectionNameToClose));
+						Logging::getInstance()->WriteLog(INFORMATION, QString("Connection %1 closed, it wasn't the current connection").arg(sConnectionNameToClose));
+						ResetGui();
 					}
 					else
 					{
-						Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1").arg(QString().setNum(i)));
+						Logging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 						#ifdef _DEBUG
-						qDebug() << QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1").arg(QString().setNum(i));
+						qDebug() << QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 						#endif
 					}
 				}

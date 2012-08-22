@@ -51,6 +51,8 @@ bool ODBC_Connection::ConnectToDatabase(bool reconnect, QString database, QStrin
 	}
 	else
 	{
+		// set the status label
+		m_ui.StatusLabel->setText(QString("Connected to %1").arg(m_sConnectionName));
 		Logging::getInstance()->WriteLog(INFORMATION, QString("Connected to \"%1\"").arg(m_sConnectionName));
 		// the table and field view
 		m_ui.TableTreeWidget->clear();
@@ -84,6 +86,7 @@ void ODBC_Connection::LoadTableColumns(QString sTableName)
 	if (m_db.isOpen())
 	{
 		Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving tableinfo for table \"%1\" of connection \"%2\"...").arg(sTableName, m_sConnectionName));
+		bool bTableWarningShown = false;
 		m_ui.FieldTreeWidget->clear();
 		QSqlRecord records = m_db.record(sTableName);
 		QSqlField field;
@@ -107,10 +110,14 @@ void ODBC_Connection::LoadTableColumns(QString sTableName)
 			}
 			else
 			{
-				Logging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName));
-				#ifdef _DEBUG
-				qDebug() << QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName);
-				#endif
+				if (!bTableWarningShown)
+				{	
+					Logging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName));
+					#ifdef _DEBUG
+					qDebug() << QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName);
+					#endif
+					bTableWarningShown = true;
+				}
 			}
 			bool isPrimaryKey = index.contains(sName) ? true : false;
 			QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList() << sName << sTypeName << sLength << sNullable);
@@ -199,29 +206,31 @@ void ODBC_Connection::HandleLeftRightButton(bool directionRight)
 {
 	m_ui.LeftToolButton->setEnabled(true);
 	m_ui.RightToolButton->setEnabled(true);
+	int iStatementCount = m_slStatementHistory.count();
 	if (directionRight)
 	{
 		m_iCurrentHistoryIndex++;
-		if (m_iCurrentHistoryIndex == (m_slStatementHistory.count() + 1))
-			m_iCurrentHistoryIndex = m_slStatementHistory.count();
+		if (m_iCurrentHistoryIndex > iStatementCount)
+			m_iCurrentHistoryIndex = iStatementCount;
 	}
 	else
 	{
 		m_iCurrentHistoryIndex--;
-		if (m_iCurrentHistoryIndex == -1)
+		if (m_iCurrentHistoryIndex < 0)
 			m_iCurrentHistoryIndex = 0;
 	}
-	if (m_iCurrentHistoryIndex < m_slStatementHistory.count())
+	if (m_iCurrentHistoryIndex < iStatementCount)
 		m_ui.SQLCommandTextEdit->setText(m_slStatementHistory.value(m_iCurrentHistoryIndex));
 	else
 		m_ui.SQLCommandTextEdit->setText("");
-	m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 
 	if (m_iCurrentHistoryIndex == 0)
 		m_ui.LeftToolButton->setDisabled(true);
 
-	if (m_iCurrentHistoryIndex == m_slStatementHistory.count() && m_slStatementHistory.count() != 0)
+	if (m_iCurrentHistoryIndex == iStatementCount && iStatementCount != 0)
 		m_ui.RightToolButton->setDisabled(true);
+
+	m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 }
 
 void ODBC_Connection::HandleSQLCommandTextChanged()
@@ -245,10 +254,12 @@ void ODBC_Connection::RestoreGui()
 	m_ui.SQLCommandTextEdit->setText(m_sCurrentStatement);
 	m_ui.SQLLogTextBrowser->setText(m_sLogFile);
 
-	if (m_iCurrentHistoryIndex < m_slStatementHistory.count())
+	int iStatementCount = m_slStatementHistory.count();
+	if (m_iCurrentHistoryIndex < iStatementCount)
 		m_ui.SQLCommandTextEdit->setText(m_slStatementHistory.value(m_iCurrentHistoryIndex));
 	else
 		m_ui.SQLCommandTextEdit->setText("");
+
 	m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 
 	if (m_ui.SQLCommandTextEdit->toPlainText() == "")
@@ -265,7 +276,7 @@ void ODBC_Connection::RestoreGui()
 			m_ui.CurrentStatementLabel->setEnabled(true);
 		}
 	}
-	else if (m_iCurrentHistoryIndex == m_slStatementHistory.count() && m_slStatementHistory.count() != 0)
+	else if (m_iCurrentHistoryIndex == iStatementCount && iStatementCount != 0)
 	{
 		m_ui.RightToolButton->setDisabled(true);
 		m_ui.LeftToolButton->setEnabled(true);
@@ -303,8 +314,7 @@ void ODBC_Connection::CloseConnection()
 		m_pSqlQueryModel = NULL;
 	}
 
-	QString connection;
-    connection = m_db.connectionName();
+	QString connection = m_db.connectionName();
     m_db.close();
     m_db = QSqlDatabase();
     m_db.removeDatabase(connection);
