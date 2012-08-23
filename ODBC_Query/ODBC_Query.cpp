@@ -1,6 +1,5 @@
 #include "precompiled.h"
 #include "ODBC_Query.h"
-#include "ODBC_CustomSyntaxHighlighter.h"
 #include "ODBC_Connection.h"
 #include "Logging.h"
 
@@ -56,8 +55,8 @@ void ODBC_Query::InitGui()
 	installEventFilter(this);
 
 	// init the syntax highlighter
-	ODBC_CustomSyntaxHighlighter *highlighter = new ODBC_CustomSyntaxHighlighter(ui.SQLCommandTextEdit->document());
-	highlighter->Init();
+	m_pHighlighter = new ODBC_CustomSyntaxHighlighter(ui.SQLCommandTextEdit->document());
+	m_pHighlighter->Init();
 
 	// connect gui signals to slots
 	QObject::connect(ui.ExecuteToolButton, SIGNAL(clicked()), SLOT(ExecuteButtonClicked()));
@@ -69,6 +68,8 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.AddConnectionToolButton, SIGNAL(clicked()), SLOT(NewConnection()));
 	QObject::connect(ui.CloseAllConnectionsAction, SIGNAL(triggered()), SLOT(CloseAllConnections()));
 	QObject::connect(ui.CloseAllConnectionsToolButton, SIGNAL(clicked()), SLOT(CloseAllConnections()));
+	QObject::connect(ui.ShowToolbarAction, SIGNAL(triggered()), SLOT(ShowToolbarTriggered()));
+	QObject::connect(ui.SyntaxHighlightingAction, SIGNAL(triggered()), SLOT(SyntaxHighlightingTriggered()));
 	QObject::connect(ui.SQLCommandTextEdit, SIGNAL(textChanged()), SLOT(SQLCommandTextChanged()));
 
 	Logging::getInstance()->WriteLog(INFORMATION, "Gui initialized");
@@ -438,6 +439,28 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 		#endif
 	}
 	setCursor(Qt::ArrowCursor);
+}
+
+void ODBC_Query::ShowToolbarTriggered()
+{
+	if (ui.ToolBar->isHidden())
+		ui.ToolBar->setHidden(false);
+	else
+		ui.ToolBar->setHidden(true);
+}
+
+void ODBC_Query::SyntaxHighlightingTriggered()
+{
+	if (m_pHighlighter->IsActive())
+	{
+		m_pHighlighter->SetActive(false);
+		ui.SQLCommandTextEdit->setText(ui.SQLCommandTextEdit->toPlainText());
+	}
+	else
+	{
+		m_pHighlighter->SetActive(true);
+		ui.SQLCommandTextEdit->setText(ui.SQLCommandTextEdit->toPlainText());
+	}
 }
 
 void ODBC_Query::SQLCommandTextChanged()

@@ -449,8 +449,23 @@
     <addaction name="OpenConnectionsMenu"/>
     <addaction name="CloseAllConnectionsAction"/>
    </widget>
+   <widget class="QMenu" name="ViewMenu">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="ShowToolbarAction"/>
+    <addaction name="SyntaxHighlightingAction"/>
+   </widget>
+   <widget class="QMenu" name="ExtrasMenu">
+    <property name="title">
+     <string>Extras</string>
+    </property>
+    <addaction name="OptionsAction"/>
+   </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuConnections"/>
+   <addaction name="ViewMenu"/>
+   <addaction name="ExtrasMenu"/>
   </widget>
   <widget class="QStatusBar" name="StatusBar"/>
   <widget class="QToolBar" name="ToolBar">
@@ -465,6 +480,10 @@
    </attribute>
   </widget>
   <action name="ActionExit">
+   <property name="icon">
+    <iconset resource="odbc_query.qrc">
+     <normaloff>:/ODBC_Query/Resources/exit.png</normaloff>:/ODBC_Query/Resources/exit.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -505,6 +524,37 @@
   <action name="actionTest">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="ShowToolbarAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show toolbar</string>
+   </property>
+  </action>
+  <action name="SyntaxHighlightingAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Syntax highlighting</string>
+   </property>
+  </action>
+  <action name="OptionsAction">
+   <property name="icon">
+    <iconset resource="odbc_query.qrc">
+     <normaloff>:/ODBC_Query/Resources/options.png</normaloff>:/ODBC_Query/Resources/options.png</iconset>
+   </property>
+   <property name="text">
+    <string>Options</string>
    </property>
   </action>
  </widget>

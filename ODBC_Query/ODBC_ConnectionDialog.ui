@@ -14,8 +14,8 @@
    <string>Data Sources</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>Resources/database_icon.ico</normaloff>Resources/database_icon.ico</iconset>
+   <iconset resource="ODBC_Query.qrc">
+    <normaloff>:/ODBC_Query/Resources/database_icon.ico</normaloff>:/ODBC_Query/Resources/database_icon.ico</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -182,6 +182,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="ODBC_Query.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_ConnectionDialog.ui'
 **
-** Created: Wed 22. Aug 21:22:54 2012
+** Created: Thu 23. Aug 19:01:54 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -51,7 +51,7 @@ public:
             Dialog->setObjectName(QString::fromUtf8("Dialog"));
         Dialog->resize(350, 400);
         QIcon icon;
-        icon.addFile(QString::fromUtf8("Resources/database_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/ODBC_Query/Resources/database_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
         Dialog->setWindowIcon(icon);
         verticalLayout = new QVBoxLayout(Dialog);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));

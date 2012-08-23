@@ -8,5 +8,7 @@
         <file>Resources/database_add.png</file>
         <file>Resources/database_remove.png</file>
         <file>Resources/database.png</file>
+        <file>Resources/exit.png</file>
+        <file>Resources/options.png</file>
     </qresource>
 </RCC>

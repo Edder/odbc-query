@@ -6,8 +6,16 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 		ODBC_CustomSyntaxHighlighter(QTextDocument* document): QSyntaxHighlighter(document) { };
 		~ODBC_CustomSyntaxHighlighter() { };
 	
+		void SetActive(bool active) { m_bActive = active; };
+		bool IsActive() { return m_bActive; };
 		void highlightBlock(const QString &text)
 		{  
+			if (!m_bActive)
+			{
+				setFormat(0, text.length(), Qt::black);
+				return;
+			}
+
 			enum 
 			{ 
 				NormalState = 0, 
@@ -36,10 +44,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						setFormat(start, (text.length() - i), Qt::red);
 					}
 
-					for (int j = 0, count = keywords.count(); j < count; j++)
+					for (int j = 0, count = lKeywords.count(); j < count; j++)
 					{
-						int length = keywords.value(j).length();
-						if (text.mid(i, length).toUpper() == keywords.value(j)) 
+						int length = lKeywords.value(j).length();
+						if (text.mid(i, length).toUpper() == lKeywords.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -54,10 +62,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						}
 					}
 
-					for (int j = 0, count = functions.count(); j < count; j++)
+					for (int j = 0, count = lFunctions.count(); j < count; j++)
 					{
-						int length = functions.value(j).length();
-						if (text.mid(i, length).toUpper() == functions.value(j)) 
+						int length = lFunctions.value(j).length();
+						if (text.mid(i, length).toUpper() == lFunctions.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -72,10 +80,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						}
 					}
 
-					for (int j = 0, count = operators.count(); j < count; j++)
+					for (int j = 0, count = lOperators.count(); j < count; j++)
 					{
-						int length = operators.value(j).length();
-						if (text.mid(i, length).toUpper() == operators.value(j)) 
+						int length = lOperators.value(j).length();
+						if (text.mid(i, length).toUpper() == lOperators.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -95,7 +103,7 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 
 		void Init()
 		{
-			keywords << "ABSOLUTE" << "ACTION" << "ADD" << "AFTER" << "ALTER" << "AS" << "ASC" << "AT" << "AUTHORIZATION" << "BEGIN" << "BIGINT" <<
+			lKeywords << "ABSOLUTE" << "ACTION" << "ADD" << "AFTER" << "ALTER" << "AS" << "ASC" << "AT" << "AUTHORIZATION" << "BEGIN" << "BIGINT" <<
 							"BINARY" << "BIT" << "BY" << "CASCADE" << "CHAR" << "CHARACTER" << "CHECK" << "CHECKPOINT" << "CLOSE" << "COLLATE" <<
 							"COLUMN" << "COMMIT" << "COMMITTED" << "CONNECT" << "CONNECTION" << "CONSTRAINT" << "CONTAINS" << "CONTINUE" <<
 							"CREATE" << "CUBE" << "CURRENT" << "CURRENT_DATE" << "CURRENT_TIME" << "CURSOR" << "DATABASE" << "DATE" <<
@@ -112,14 +120,15 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 							"STATISTICS" << "TABLE" << "TEMP" << "TEMPORARY" << "THEN" << "TIME" << "TIMESTAMP" << "TO" << "TOP" << "TRANSACTION" <<
 							"TRANSLATION" << "TRIGGER" << "TRUE" << "TRUNCATE" << "UNCOMMITTED" << "UNION" << "UNIQUE" << "UPDATE" << "VALUES" <<
 							"VARCHAR" << "VARYING" << "VIEW" << "WHEN" << "WHERE" << "WITH" << "WORK";
-			functions << "ABS" << "AVG" << "CASE" << "CAST" << "COALESCE" << "CONVERT" << "COUNT" << "CURRENT_TIMESTAMP" << 
+			lFunctions << "ABS" << "AVG" << "CASE" << "CAST" << "COALESCE" << "CONVERT" << "COUNT" << "CURRENT_TIMESTAMP" << 
 							"CURRENT_USER" << "DAY" << "ISNULL" << "LEFT" << "LOWER" << "MONTH" << "NULLIF" << "REPLACE" << "RIGHT" << 
 							"SESSION_USER" << "SPACE" << "SUBSTRING" << "SUM" << "SYSTEM_USER" << "UPPER" << "USER" << "YEAR";
-			operators << "ALL" << "AND" << "ANY" << "BETWEEN" << "CROSS" << "IN" << "JOIN" << "LIKE" << "NOT" << "NULL" << "OR" << "OUTER" << "SOME";
+			lOperators << "ALL" << "AND" << "ANY" << "BETWEEN" << "CROSS" << "IN" << "JOIN" << "LIKE" << "NOT" << "NULL" << "OR" << "OUTER" << "SOME";
 		}
 
 	private:
-		QStringList keywords;
-		QStringList functions;
-		QStringList operators;
+		QStringList lKeywords;
+		QStringList lFunctions;
+		QStringList lOperators;
+		bool m_bActive;
 };

@@ -5,6 +5,7 @@
 #include "ui_ODBC_Query.h"
 #include "ODBC_ConnectionDialog.h"
 #include "ODBC_Connection.h"
+#include "ODBC_CustomSyntaxHighlighter.h"
 
 class ODBC_Query : public QMainWindow
 {
@@ -24,6 +25,7 @@ class ODBC_Query : public QMainWindow
 		Ui::ODBC_QueryClass ui;
 		ODBC_Connection *m_pCurrentConnection;
 		QList<ODBC_Connection*> m_lConnections;
+		ODBC_CustomSyntaxHighlighter *m_pHighlighter;
 
 	private slots:
 		void ExecuteButtonClicked();
@@ -34,6 +36,8 @@ class ODBC_Query : public QMainWindow
 		void NewConnection();
 		void CloseAllConnections(bool close = false);
 		void ConnectionsClicked(QAction *action);
+		void ShowToolbarTriggered();
+		void SyntaxHighlightingTriggered();
 		void SQLCommandTextChanged();
 };
 
