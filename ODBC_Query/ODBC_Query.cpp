@@ -51,6 +51,11 @@ void ODBC_Query::InitGui()
 	ui.ToolBar->addWidget(ui.OpenConnectionsToolButton);
 	ui.OpenConnectionsToolButton->setMenu(ui.OpenConnectionsMenu);
 	ui.ToolBar->addWidget(ui.CloseAllConnectionsToolButton);
+	m_pLoadingAnimation = new QMovie(":/ODBC_Query/Resources/loading.gif");
+	m_pLoadingLabel = new QLabel(this);
+	m_pLoadingLabel->setMovie(m_pLoadingAnimation);
+	ui.StatusBar->addPermanentWidget(m_pLoadingLabel);
+	m_pLoadingLabel->setHidden(true);
 
 	installEventFilter(this);
 
@@ -113,7 +118,7 @@ void ODBC_Query::DisableQueryToolbar()
 	//}
 }
 
-void ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConnectionName)
+bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConnectionName)
 {
 	if (connection == NULL)
 	{
@@ -121,12 +126,18 @@ void ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 		#ifdef _DEBUG
 		qDebug() << "Null pointer at SwitchToConnection() in connection";
 		#endif
-		return;
+		return false;
 	}
 
 	m_pCurrentConnection = connection;
 	m_pCurrentConnection->OpenConnection(newConnectionName);
-	m_pCurrentConnection->ConnectToDatabase(true);
+	QString sErrorMessage = m_pCurrentConnection->ConnectToDatabase(true);
+	if (sErrorMessage != "")
+	{
+		QMessageBox::critical(this, "Error", sErrorMessage, QMessageBox::Ok);
+		return false;
+	}
+	
 	QAction *pAction;
 	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
 	for (int i = 0, count = lActions.count(); i < count; i++)
@@ -147,13 +158,32 @@ void ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 			#endif
 		}
 	}
+	return true;
 }
 
 // <SLOTS>
 void ODBC_Query::ExecuteButtonClicked()
 {
 	if (m_pCurrentConnection != NULL && ui.ExecuteToolButton->isEnabled())
-		m_pCurrentConnection->ExecuteQuery(ui.SQLCommandTextEdit->toPlainText(), true);
+	{
+		if (m_pCurrentConnection->isRunning())
+			m_pCurrentConnection->terminate();
+		QString sQuery = ui.SQLCommandTextEdit->toPlainText();
+		if (!m_pCurrentConnection->IsConnectionOpen())
+		{
+			QString sConnectionName = m_pCurrentConnection->GetConnectionName();
+			Logging::getInstance()->WriteLog(ERROR, QString("Couldn't execute statement \"%1\" of connection \"%2\", connection isn't open").arg(sQuery, sConnectionName));
+			#ifdef _DEBUG
+			qDebug() << QString("Couldn't execute statement \"%1\" of connection \"%2\", connection isn't open").arg(sQuery, sConnectionName);
+			#endif
+			return;
+		}
+		m_pCurrentConnection->SetNextStatement(sQuery);
+		m_pCurrentConnection->start();
+		ui.ExecuteToolButton->setDisabled(true);
+		m_pLoadingLabel->setHidden(false);
+		m_pLoadingAnimation->start();
+	}
 }
 
 void ODBC_Query::LeftButtonClicked()
@@ -200,7 +230,7 @@ void ODBC_Query::NewConnection()
 		ODBC_Connection *pConnection = m_lConnections.value(i);
 		if (pConnection != NULL)
 		{
-			if (pConnection->getConnectionName() == sNewConnectionName)
+			if (pConnection->GetConnectionName() == sNewConnectionName)
 			{
 				if (m_pCurrentConnection != NULL)
 					m_pCurrentConnection->CloseConnection();
@@ -218,15 +248,17 @@ void ODBC_Query::NewConnection()
 		m_pCurrentConnection->CloseConnection();
 	m_pCurrentConnection = NULL;
 	// make a new connection
-	m_pCurrentConnection = new ODBC_Connection(ui, this);
+	m_pCurrentConnection = new ODBC_Connection(ui);
 	m_pCurrentConnection->OpenConnection(sNewConnectionName);
 	ResetGui();
 	// and connect to the dsn
-	if (m_pCurrentConnection->ConnectToDatabase(false, sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword()))
+	QString sErrorMessage = m_pCurrentConnection->ConnectToDatabase(false, sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword());
+	if (sErrorMessage == "")
 	{
 		//// set the status label
 		//ui.StatusLabel->setText(QString("Connected to %1").arg(sNewConnectionName));
 		m_lConnections.append(m_pCurrentConnection);
+		QObject::connect(m_pCurrentConnection, SIGNAL(finished()), SLOT(Executed()));
 		// add a new action with the connectionName
 		QAction *pAction = new QAction(sNewConnectionName, this);
 		pAction->setCheckable(true);
@@ -268,6 +300,8 @@ void ODBC_Query::NewConnection()
 		if (!ui.CloseAllConnectionsToolButton->isEnabled())
 			ui.CloseAllConnectionsToolButton->setEnabled(true);
 	}
+	else
+		QMessageBox::critical(this, "Error", sErrorMessage, QMessageBox::Ok);
 	// set back to arrow cursor
 	setCursor(Qt::ArrowCursor);
 }
@@ -287,7 +321,7 @@ void ODBC_Query::CloseAllConnections(bool close)
 		ODBC_Connection *pConnection = m_lConnections.value(i);
 		if (pConnection != NULL)
 		{
-			QString sConnectionName = pConnection->getConnectionName();
+			QString sConnectionName = pConnection->GetConnectionName();
 			Logging::getInstance()->WriteLog(INFORMATION, QString("Attempting to close \"%1\"...").arg(sConnectionName));
 			pConnection->CloseConnection();
 			delete pConnection;
@@ -323,7 +357,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 		{
 			QString sNewConnectionName = pMenu->title();
 			if (m_pCurrentConnection != NULL)
-				Logging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\" (current connection: \"%2\")...").arg(sNewConnectionName, m_pCurrentConnection->getConnectionName()));
+				Logging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\" (current connection: \"%2\")...").arg(sNewConnectionName, m_pCurrentConnection->GetConnectionName()));
 			else
 				Logging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\"...").arg(sNewConnectionName));
 			for (int i = 0, count = m_lConnections.count(); i < count; i++)
@@ -331,22 +365,24 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 				ODBC_Connection *pConnection = m_lConnections.value(i);
 				if (pConnection != NULL)
 				{
-					QString sOldConnectionName = pConnection->getConnectionName();
+					QString sOldConnectionName = pConnection->GetConnectionName();
 					if (sOldConnectionName != sNewConnectionName)
 						continue;
 
 					if (m_pCurrentConnection != NULL)
 					{
-						if (m_pCurrentConnection->getConnectionName() != sOldConnectionName)
+						if (m_pCurrentConnection->GetConnectionName() != sOldConnectionName)
 						{
 							m_pCurrentConnection->CloseConnection();
-							SwitchToConnection(pConnection, sNewConnectionName);
+							if (!SwitchToConnection(pConnection, sNewConnectionName))
+								return;
 						}
 					}
 					else
-						SwitchToConnection(pConnection, sNewConnectionName);
+						if (!SwitchToConnection(pConnection, sNewConnectionName))
+							return;
 					if (m_pCurrentConnection != NULL)
-						Logging::getInstance()->WriteLog(INFORMATION, QString("Switched connection, current connection \"%1\"").arg(m_pCurrentConnection->getConnectionName()));
+						Logging::getInstance()->WriteLog(INFORMATION, QString("Switched connection, current connection \"%1\"").arg(m_pCurrentConnection->GetConnectionName()));
 				}
 			}
 		}
@@ -377,7 +413,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 			bool bCurrentConnection = false;
 			if (m_pCurrentConnection != NULL)
 			{
-				if (m_pCurrentConnection->getConnectionName() == sConnectionNameToClose) // is it the current connection we need to close?
+				if (m_pCurrentConnection->GetConnectionName() == sConnectionNameToClose) // is it the current connection we need to close?
 				{
 					m_lConnections.removeOne(m_pCurrentConnection);
 					ui.OpenConnectionsMenu->removeAction(pAction);
@@ -405,7 +441,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 					ODBC_Connection *pConnection = m_lConnections.value(i);
 					if (pConnection != NULL)
 					{
-						QString CurrentConnectionName = pConnection->getConnectionName();
+						QString CurrentConnectionName = pConnection->GetConnectionName();
 						if (CurrentConnectionName != sConnectionNameToClose)
 							continue;
 
@@ -468,11 +504,19 @@ void ODBC_Query::SQLCommandTextChanged()
 	if (m_pCurrentConnection != NULL)
 		m_pCurrentConnection->HandleSQLCommandTextChanged();
 }
+
+void ODBC_Query::Executed()
+{
+	m_pCurrentConnection->Executed();
+	ui.ExecuteToolButton->setEnabled(true);
+	m_pLoadingAnimation->stop();
+	m_pLoadingLabel->setHidden(true);
+}
 // </SLOTS>
 
 bool ODBC_Query::eventFilter(QObject *object, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress) {
+	if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         if (keyEvent->key() == Qt::Key_F5) 
 			ExecuteButtonClicked();

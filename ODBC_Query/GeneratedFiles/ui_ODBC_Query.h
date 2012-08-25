@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_Query.ui'
 **
-** Created: Thu 23. Aug 19:01:54 2012
+** Created: Sat 25. Aug 18:55:08 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -70,8 +70,8 @@ public:
     QTextEdit *SQLCommandTextEdit;
     QTextBrowser *SQLLogTextBrowser;
     QMenuBar *MenuBar;
-    QMenu *MenuFile;
-    QMenu *MenuConnections;
+    QMenu *FileMenu;
+    QMenu *ConnectionsMenu;
     QMenu *OpenConnectionsMenu;
     QMenu *ViewMenu;
     QMenu *ExtrasMenu;
@@ -319,11 +319,11 @@ public:
         MenuBar = new QMenuBar(ODBC_QueryClass);
         MenuBar->setObjectName(QString::fromUtf8("MenuBar"));
         MenuBar->setGeometry(QRect(0, 0, 1074, 21));
-        MenuFile = new QMenu(MenuBar);
-        MenuFile->setObjectName(QString::fromUtf8("MenuFile"));
-        MenuConnections = new QMenu(MenuBar);
-        MenuConnections->setObjectName(QString::fromUtf8("MenuConnections"));
-        OpenConnectionsMenu = new QMenu(MenuConnections);
+        FileMenu = new QMenu(MenuBar);
+        FileMenu->setObjectName(QString::fromUtf8("FileMenu"));
+        ConnectionsMenu = new QMenu(MenuBar);
+        ConnectionsMenu->setObjectName(QString::fromUtf8("ConnectionsMenu"));
+        OpenConnectionsMenu = new QMenu(ConnectionsMenu);
         OpenConnectionsMenu->setObjectName(QString::fromUtf8("OpenConnectionsMenu"));
         OpenConnectionsMenu->setEnabled(false);
         OpenConnectionsMenu->setIcon(icon5);
@@ -339,14 +339,14 @@ public:
         ToolBar->setObjectName(QString::fromUtf8("ToolBar"));
         ODBC_QueryClass->addToolBar(Qt::TopToolBarArea, ToolBar);
 
-        MenuBar->addAction(MenuFile->menuAction());
-        MenuBar->addAction(MenuConnections->menuAction());
+        MenuBar->addAction(FileMenu->menuAction());
+        MenuBar->addAction(ConnectionsMenu->menuAction());
         MenuBar->addAction(ViewMenu->menuAction());
         MenuBar->addAction(ExtrasMenu->menuAction());
-        MenuFile->addAction(ActionExit);
-        MenuConnections->addAction(NewConnectionAction);
-        MenuConnections->addAction(OpenConnectionsMenu->menuAction());
-        MenuConnections->addAction(CloseAllConnectionsAction);
+        FileMenu->addAction(ActionExit);
+        ConnectionsMenu->addAction(NewConnectionAction);
+        ConnectionsMenu->addAction(OpenConnectionsMenu->menuAction());
+        ConnectionsMenu->addAction(CloseAllConnectionsAction);
         ViewMenu->addAction(ShowToolbarAction);
         ViewMenu->addAction(SyntaxHighlightingAction);
         ExtrasMenu->addAction(OptionsAction);
@@ -401,8 +401,8 @@ public:
         LeftToolButton->setText(QApplication::translate("ODBC_QueryClass", "left", 0, QApplication::UnicodeUTF8));
         CurrentStatementLabel->setText(QApplication::translate("ODBC_QueryClass", "1", 0, QApplication::UnicodeUTF8));
         RightToolButton->setText(QApplication::translate("ODBC_QueryClass", "right", 0, QApplication::UnicodeUTF8));
-        MenuFile->setTitle(QApplication::translate("ODBC_QueryClass", "File", 0, QApplication::UnicodeUTF8));
-        MenuConnections->setTitle(QApplication::translate("ODBC_QueryClass", "Connections", 0, QApplication::UnicodeUTF8));
+        FileMenu->setTitle(QApplication::translate("ODBC_QueryClass", "File", 0, QApplication::UnicodeUTF8));
+        ConnectionsMenu->setTitle(QApplication::translate("ODBC_QueryClass", "Connections", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         OpenConnectionsMenu->setToolTip(QApplication::translate("ODBC_QueryClass", "Open existing connections", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP

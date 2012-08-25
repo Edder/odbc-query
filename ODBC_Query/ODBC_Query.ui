@@ -417,13 +417,13 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="MenuFile">
+   <widget class="QMenu" name="FileMenu">
     <property name="title">
      <string>File</string>
     </property>
     <addaction name="ActionExit"/>
    </widget>
-   <widget class="QMenu" name="MenuConnections">
+   <widget class="QMenu" name="ConnectionsMenu">
     <property name="title">
      <string>Connections</string>
     </property>
@@ -462,8 +462,8 @@
     </property>
     <addaction name="OptionsAction"/>
    </widget>
-   <addaction name="MenuFile"/>
-   <addaction name="MenuConnections"/>
+   <addaction name="FileMenu"/>
+   <addaction name="ConnectionsMenu"/>
    <addaction name="ViewMenu"/>
    <addaction name="ExtrasMenu"/>
   </widget>

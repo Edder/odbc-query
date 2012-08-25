@@ -18,37 +18,40 @@ class ODBC_TableView : public QTableView
 
 				qSort(list);
 
-				if(list.size() < 1)
-					return;
-
 				QString copy_table;
-				QModelIndex last = list.last();
-				QModelIndex previous = list.first();
 
-				list.removeFirst();
-
-				for(int i = 0; i < list.size(); i++)
+				if(list.size() == 1)
+					copy_table = abmodel->data(list.value(0)).toString();
+				else if (list.size() > 1)
 				{
-					QVariant data = abmodel->data(previous);
-					QString text = data.toString();
+					QModelIndex last = list.last();
+					QModelIndex previous = list.first();
 
-					QModelIndex index = list.at(i);
-					copy_table.append(text);
+					list.removeFirst();
 
-					if(index.row() != previous.row())
-						copy_table.append('\n');
-					else
-						copy_table.append('\t');
-					previous = index;
+					for(int i = 0; i < list.size(); i++)
+					{
+						QVariant data = abmodel->data(previous);
+						QString text = data.toString();
+
+						QModelIndex index = list.at(i);
+						copy_table.append(text);
+
+						if(index.row() != previous.row())
+							copy_table.append('\n');
+						else
+							copy_table.append('\t');
+						previous = index;
+					}
+
+					copy_table.append(abmodel->data(list.last()).toString());
+					copy_table.append('\n');
 				}
-
-				copy_table.append(abmodel->data(list.last()).toString());
-				copy_table.append('\n');
+				else
+					return;
 
 				QClipboard *clipboard = QApplication::clipboard();
 				clipboard->setText(copy_table);
-
-				qDebug() << clipboard->text();
 			}
 			else
 				QTableView::keyPressEvent(event);

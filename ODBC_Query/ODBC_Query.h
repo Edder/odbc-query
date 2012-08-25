@@ -19,13 +19,15 @@ class ODBC_Query : public QMainWindow
 		void InitGui();
 		void ResetGui();
 		void DisableQueryToolbar();
-		void SwitchToConnection(ODBC_Connection *connection, QString newConnectionName);
+		bool SwitchToConnection(ODBC_Connection *connection, QString newConnectionName);
 		bool eventFilter(QObject *object, QEvent *event);
 
 		Ui::ODBC_QueryClass ui;
 		ODBC_Connection *m_pCurrentConnection;
 		QList<ODBC_Connection*> m_lConnections;
 		ODBC_CustomSyntaxHighlighter *m_pHighlighter;
+		QMovie *m_pLoadingAnimation;
+		QLabel *m_pLoadingLabel;
 
 	private slots:
 		void ExecuteButtonClicked();
@@ -39,6 +41,7 @@ class ODBC_Query : public QMainWindow
 		void ShowToolbarTriggered();
 		void SyntaxHighlightingTriggered();
 		void SQLCommandTextChanged();
+		void Executed();
 };
 
 #endif // ODBC_QUERY_H

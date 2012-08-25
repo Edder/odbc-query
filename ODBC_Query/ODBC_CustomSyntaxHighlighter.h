@@ -44,10 +44,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						setFormat(start, (text.length() - i), Qt::red);
 					}
 
-					for (int j = 0, count = lKeywords.count(); j < count; j++)
+					for (int j = 0, count = m_lKeywords.count(); j < count; j++)
 					{
-						int length = lKeywords.value(j).length();
-						if (text.mid(i, length).toUpper() == lKeywords.value(j)) 
+						int length = m_lKeywords.value(j).length();
+						if (text.mid(i, length).toUpper() == m_lKeywords.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -62,10 +62,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						}
 					}
 
-					for (int j = 0, count = lFunctions.count(); j < count; j++)
+					for (int j = 0, count = m_lFunctions.count(); j < count; j++)
 					{
-						int length = lFunctions.value(j).length();
-						if (text.mid(i, length).toUpper() == lFunctions.value(j)) 
+						int length = m_lFunctions.value(j).length();
+						if (text.mid(i, length).toUpper() == m_lFunctions.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -80,10 +80,10 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 						}
 					}
 
-					for (int j = 0, count = lOperators.count(); j < count; j++)
+					for (int j = 0, count = m_lOperators.count(); j < count; j++)
 					{
-						int length = lOperators.value(j).length();
-						if (text.mid(i, length).toUpper() == lOperators.value(j)) 
+						int length = m_lOperators.value(j).length();
+						if (text.mid(i, length).toUpper() == m_lOperators.value(j)) 
 						{
 							if (i == 0)
 							{
@@ -103,7 +103,7 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 
 		void Init()
 		{
-			lKeywords << "ABSOLUTE" << "ACTION" << "ADD" << "AFTER" << "ALTER" << "AS" << "ASC" << "AT" << "AUTHORIZATION" << "BEGIN" << "BIGINT" <<
+			m_lKeywords << "ABSOLUTE" << "ACTION" << "ADD" << "AFTER" << "ALTER" << "AS" << "ASC" << "AT" << "AUTHORIZATION" << "BEGIN" << "BIGINT" <<
 							"BINARY" << "BIT" << "BY" << "CASCADE" << "CHAR" << "CHARACTER" << "CHECK" << "CHECKPOINT" << "CLOSE" << "COLLATE" <<
 							"COLUMN" << "COMMIT" << "COMMITTED" << "CONNECT" << "CONNECTION" << "CONSTRAINT" << "CONTAINS" << "CONTINUE" <<
 							"CREATE" << "CUBE" << "CURRENT" << "CURRENT_DATE" << "CURRENT_TIME" << "CURSOR" << "DATABASE" << "DATE" <<
@@ -120,15 +120,17 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 							"STATISTICS" << "TABLE" << "TEMP" << "TEMPORARY" << "THEN" << "TIME" << "TIMESTAMP" << "TO" << "TOP" << "TRANSACTION" <<
 							"TRANSLATION" << "TRIGGER" << "TRUE" << "TRUNCATE" << "UNCOMMITTED" << "UNION" << "UNIQUE" << "UPDATE" << "VALUES" <<
 							"VARCHAR" << "VARYING" << "VIEW" << "WHEN" << "WHERE" << "WITH" << "WORK";
-			lFunctions << "ABS" << "AVG" << "CASE" << "CAST" << "COALESCE" << "CONVERT" << "COUNT" << "CURRENT_TIMESTAMP" << 
+			m_lFunctions << "ABS" << "AVG" << "CASE" << "CAST" << "COALESCE" << "CONVERT" << "COUNT" << "CURRENT_TIMESTAMP" << 
 							"CURRENT_USER" << "DAY" << "ISNULL" << "LEFT" << "LOWER" << "MONTH" << "NULLIF" << "REPLACE" << "RIGHT" << 
 							"SESSION_USER" << "SPACE" << "SUBSTRING" << "SUM" << "SYSTEM_USER" << "UPPER" << "USER" << "YEAR";
-			lOperators << "ALL" << "AND" << "ANY" << "BETWEEN" << "CROSS" << "IN" << "JOIN" << "LIKE" << "NOT" << "NULL" << "OR" << "OUTER" << "SOME";
+			m_lOperators << "ALL" << "AND" << "ANY" << "BETWEEN" << "CROSS" << "IN" << "JOIN" << "LIKE" << "NOT" << "NULL" << "OR" << "OUTER" << "SOME";
+		
+			m_bActive = true;
 		}
 
 	private:
-		QStringList lKeywords;
-		QStringList lFunctions;
-		QStringList lOperators;
+		QStringList m_lKeywords;
+		QStringList m_lFunctions;
+		QStringList m_lOperators;
 		bool m_bActive;
 };

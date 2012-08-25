@@ -10,5 +10,6 @@
         <file>Resources/database.png</file>
         <file>Resources/exit.png</file>
         <file>Resources/options.png</file>
+        <file>Resources/loading.gif</file>
     </qresource>
 </RCC>
