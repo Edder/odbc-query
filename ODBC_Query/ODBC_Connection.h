@@ -10,7 +10,7 @@ class ODBC_Connection : public QThread
 		ODBC_Connection(Ui::ODBC_QueryClass ui);
 		~ODBC_Connection();
 
-		QString ConnectToDatabase(bool reconnect, QString database = NULL, QString user = NULL, QString password = NULL); 
+		bool ConnectToDatabase(QString database = NULL, QString user = NULL, QString password = NULL); 
 		void LoadTableColumns(QString tableName);
 		void ExecuteQuery(QString query);
 		void HandleLeftRightButton(bool directionRight);
@@ -21,26 +21,20 @@ class ODBC_Connection : public QThread
 		void CloseConnection();
 		QString GetConnectionName() { return m_sConnectionName; };
 		void SetNextStatement(QString nextStatement) { m_sNextStatement = nextStatement; };
-		void SetFirstStatement(QString nextStatement) { m_sNextStatement = nextStatement; };
 		bool IsConnectionOpen() { return m_db.isOpen(); };
 		QString GetStatementError() { return m_sStatementExecutionError; };
-
-				QSqlQuery *m_pQuery;
+		QString GetDatabaseError() { return m_sDatabaseError; };
 
 	private:
 		void run();
 
-		QString m_sDatabase;
-		QString m_sUser;
-		QString m_sPassword;
 		QString m_sConnectionName;
 		Ui::ODBC_QueryClass m_ui;
 		QSqlDatabase m_db;
-
+		QSqlQuery *m_pQuery;
 		QSortFilterProxyModel *m_pSortModel;
 		QSqlQueryModel *m_pSqlQueryModel;
 		QString m_sCurrentStatement;
-		QString m_sLastSelectStatement;
 		QStringList m_slStatementHistory;
 		int m_iCurrentHistoryIndex;
 		QString m_sLoadedTable;
@@ -49,6 +43,7 @@ class ODBC_Connection : public QThread
 		QString m_sNextStatement;
 		QString m_sStatementExecutionError;
 		bool m_bStatementExecuted;
+		QString m_sDatabaseError;
 
 	public slots:
 		void Executed();

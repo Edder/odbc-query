@@ -108,14 +108,11 @@ void ODBC_Query::DisableQueryToolbar()
 	if (ui.CurrentStatementLabel->isEnabled())
 		ui.CurrentStatementLabel->setDisabled(true);
 
-	//if (m_pCurrentConnection == NULL)
-	//{
 	if (ui.RightToolButton->isEnabled())
 		ui.RightToolButton->setDisabled(true);
 
 	if (ui.LeftToolButton->isEnabled())
 		ui.LeftToolButton->setDisabled(true);
-	//}
 }
 
 bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConnectionName)
@@ -130,13 +127,7 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 	}
 
 	m_pCurrentConnection = connection;
-	m_pCurrentConnection->OpenConnection(newConnectionName);
-	QString sErrorMessage = m_pCurrentConnection->ConnectToDatabase(true);
-	if (sErrorMessage != "")
-	{
-		QMessageBox::critical(this, "Error", sErrorMessage, QMessageBox::Ok);
-		return false;
-	}
+	m_pCurrentConnection->RestoreGui();
 	
 	QAction *pAction;
 	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
@@ -221,7 +212,7 @@ void ODBC_Query::NewConnection()
 	QString sDatabase = connectiondialog.getDatabase();
 
 	// set wait cursor
-	setCursor(Qt::WaitCursor);
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	QApplication::processEvents();
 	QString sNewConnectionName = QString("%1 (%2)").arg(sDatabase, connectiondialog.isSystemDSN() ? "System" : "User");
 	// check whether we already have a connection with that name and switch to it if yes
@@ -233,9 +224,9 @@ void ODBC_Query::NewConnection()
 			if (pConnection->GetConnectionName() == sNewConnectionName)
 			{
 				if (m_pCurrentConnection != NULL)
-					m_pCurrentConnection->CloseConnection();
+					m_pCurrentConnection->RestoreGui();
 				SwitchToConnection(pConnection, sNewConnectionName);
-				setCursor(Qt::ArrowCursor);
+				QApplication::restoreOverrideCursor();
 				return;
 			}
 		}
@@ -245,18 +236,15 @@ void ODBC_Query::NewConnection()
 
 	// close the current connection (if there is one)
 	if (m_pCurrentConnection != NULL)
-		m_pCurrentConnection->CloseConnection();
+		m_pCurrentConnection->SaveGui();
 	m_pCurrentConnection = NULL;
 	// make a new connection
 	m_pCurrentConnection = new ODBC_Connection(ui);
 	m_pCurrentConnection->OpenConnection(sNewConnectionName);
 	ResetGui();
 	// and connect to the dsn
-	QString sErrorMessage = m_pCurrentConnection->ConnectToDatabase(false, sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword());
-	if (sErrorMessage == "")
+	if (m_pCurrentConnection->ConnectToDatabase(sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword()))
 	{
-		//// set the status label
-		//ui.StatusLabel->setText(QString("Connected to %1").arg(sNewConnectionName));
 		m_lConnections.append(m_pCurrentConnection);
 		QObject::connect(m_pCurrentConnection, SIGNAL(finished()), SLOT(Executed()));
 		// add a new action with the connectionName
@@ -301,9 +289,9 @@ void ODBC_Query::NewConnection()
 			ui.CloseAllConnectionsToolButton->setEnabled(true);
 	}
 	else
-		QMessageBox::critical(this, "Error", sErrorMessage, QMessageBox::Ok);
+		QMessageBox::critical(this, "Error", m_pCurrentConnection->GetDatabaseError(), QMessageBox::Ok);
 	// set back to arrow cursor
-	setCursor(Qt::ArrowCursor);
+	QApplication::restoreOverrideCursor();
 }
 
 void ODBC_Query::CloseAllConnections(bool close)
@@ -346,7 +334,7 @@ void ODBC_Query::CloseAllConnections(bool close)
 
 void ODBC_Query::ConnectionsClicked(QAction *action)
 {
-	setCursor(Qt::WaitCursor);
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	QApplication::processEvents();
 	
 	QMenu *pMenu = (QMenu*)action->parentWidget();
@@ -373,7 +361,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 					{
 						if (m_pCurrentConnection->GetConnectionName() != sOldConnectionName)
 						{
-							m_pCurrentConnection->CloseConnection();
+							m_pCurrentConnection->SaveGui();
 							if (!SwitchToConnection(pConnection, sNewConnectionName))
 								return;
 						}
@@ -474,7 +462,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 		qDebug() << "Null pointer at ConnectionsClicked() in pMenu";
 		#endif
 	}
-	setCursor(Qt::ArrowCursor);
+	QApplication::restoreOverrideCursor();
 }
 
 void ODBC_Query::ShowToolbarTriggered()
