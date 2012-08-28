@@ -5,6 +5,12 @@ void ODBC_ConnectionDialog::Init()
 {
 	ui.setupUi(this);
 
+	// remove the ? in the titlebar
+	Qt::WindowFlags flags = windowFlags();
+	Qt::WindowFlags helpFlag = Qt::WindowContextHelpButtonHint;
+	flags = flags & (~helpFlag);
+	setWindowFlags(flags);
+
 	m_bChoiceMade = false;
 
 	QObject::connect(ui.ConnectButton, SIGNAL(clicked()), SLOT(ConnectButtonClicked()));
@@ -43,7 +49,7 @@ void ODBC_ConnectionDialog::ConnectButtonClicked()
 	m_sEnteredPassword = ui.PasswordLineEdit->text();
 
 	QSettings Login("login.ini", QSettings::IniFormat, this);
-	Login.beginGroup(QString("%1 (%2)").arg(m_sSelectedDatabase, isSystemDSN() ? "System" : "User"));
+	Login.beginGroup(QString("%1 (%2)").arg(m_sSelectedDatabase, m_bSystemDSNSelected ? "System" : "User"));
 	if (ui.RememberCheckBox->checkState() == Qt::Checked)
 	{
 		Login.setValue("user", m_sEnteredUsername);
@@ -55,11 +61,6 @@ void ODBC_ConnectionDialog::ConnectButtonClicked()
 
 	m_bChoiceMade = true;
 
-	close();
-}
-
-void ODBC_ConnectionDialog::CancelButtonClicked()
-{
 	close();
 }
 

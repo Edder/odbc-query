@@ -2,6 +2,8 @@
 #include "ODBC_Query.h"
 #include "ODBC_Connection.h"
 #include "Logging.h"
+#include "ODBC_ConnectionDialog.h"
+#include "ODBC_OptionsDialog.h"
 
 ODBC_Query::ODBC_Query(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, flags)
 {
@@ -9,8 +11,10 @@ ODBC_Query::ODBC_Query(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 
 	QCoreApplication::setApplicationName("ODBC Query");
 
+	// initialize the logging
 	Logging::getInstance()->Init();
 	Logging::getInstance()->WriteLog(INFORMATION, QString("Starting %1 (PID: %2)...").arg(QCoreApplication::applicationName(), QString().setNum(QCoreApplication::applicationPid())));
+	
 	InitGui();
 
 	m_pCurrentConnection = NULL;
@@ -76,6 +80,10 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.ShowToolbarAction, SIGNAL(triggered()), SLOT(ShowToolbarTriggered()));
 	QObject::connect(ui.SyntaxHighlightingAction, SIGNAL(triggered()), SLOT(SyntaxHighlightingTriggered()));
 	QObject::connect(ui.SQLCommandTextEdit, SIGNAL(textChanged()), SLOT(SQLCommandTextChanged()));
+	QObject::connect(ui.OptionsAction, SIGNAL(triggered()), SLOT(ShowOptions()));
+
+	// initialize options menu
+	mOptionsDialog.Init();
 
 	Logging::getInstance()->WriteLog(INFORMATION, "Gui initialized");
 }
@@ -98,6 +106,8 @@ void ODBC_Query::ResetGui()
 		ui.CloseAllConnectionsToolButton->setDisabled(true);
 	}
 	DisableQueryToolbar();
+
+	Logging::getInstance()->WriteLog(INFORMATION, "Gui resetted");
 }
 
 void ODBC_Query::DisableQueryToolbar()
@@ -128,6 +138,7 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 
 	m_pCurrentConnection = connection;
 	m_pCurrentConnection->RestoreGui();
+	ui.SQLLogTextBrowser->verticalScrollBar()->setSliderPosition(ui.SQLLogTextBrowser->verticalScrollBar()->maximum());
 	
 	QAction *pAction;
 	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
@@ -155,10 +166,11 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 // <SLOTS>
 void ODBC_Query::ExecuteButtonClicked()
 {
-	if (m_pCurrentConnection != NULL && ui.ExecuteToolButton->isEnabled())
+	if (!ui.ExecuteToolButton->isEnabled())
+		return;
+
+	if (m_pCurrentConnection != NULL)
 	{
-		if (m_pCurrentConnection->isRunning())
-			m_pCurrentConnection->terminate();
 		QString sQuery = ui.SQLCommandTextEdit->toPlainText();
 		if (!m_pCurrentConnection->IsConnectionOpen())
 		{
@@ -169,11 +181,20 @@ void ODBC_Query::ExecuteButtonClicked()
 			#endif
 			return;
 		}
-		m_pCurrentConnection->SetNextStatement(sQuery);
-		m_pCurrentConnection->start();
+		// send the signal to the execute thread
+		emit ExecuteQuery(sQuery);
+
+		// disable execute button and start the loading animation
 		ui.ExecuteToolButton->setDisabled(true);
 		m_pLoadingLabel->setHidden(false);
 		m_pLoadingAnimation->start();
+	}
+	else
+	{
+		Logging::getInstance()->WriteLog(WARNING, "Null pointer at ExecuteButtonClicked() in m_pCurrentConnection");
+		#ifdef _DEBUG
+		qDebug() << "Null pointer at ExecuteButtonClicked() in m_pCurrentConnection";
+		#endif
 	}
 }
 
@@ -191,7 +212,7 @@ void ODBC_Query::RightButtonClicked()
 
 void ODBC_Query::TableItemClicked(QTreeWidgetItem *item, int column)
 {
-	if (m_pCurrentConnection != NULL)
+	if (m_pCurrentConnection != NULL && item != NULL)
 		m_pCurrentConnection->LoadTableColumns(item->text(0));
 }
 
@@ -203,18 +224,18 @@ void ODBC_Query::Exit()
 void ODBC_Query::NewConnection()
 {
 	Logging::getInstance()->WriteLog(INFORMATION, "Opening new connection...");
-	ODBC_ConnectionDialog connectiondialog;
-	connectiondialog.Init();
-	connectiondialog.exec();
-	if (!connectiondialog.isValid())
+	ODBC_ConnectionDialog ConnectionDialog;
+	ConnectionDialog.Init();
+	ConnectionDialog.exec();
+	if (!ConnectionDialog.IsValid())
 		return;
 
-	QString sDatabase = connectiondialog.getDatabase();
+	QString sDatabase = ConnectionDialog.GetDatabase();
 
 	// set wait cursor
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	QApplication::processEvents();
-	QString sNewConnectionName = QString("%1 (%2)").arg(sDatabase, connectiondialog.isSystemDSN() ? "System" : "User");
+	QString sNewConnectionName = QString("%1 (%2)").arg(sDatabase, ConnectionDialog.IsSystemDSN() ? "System" : "User");
 	// check whether we already have a connection with that name and switch to it if yes
 	for (int i = 0, count = m_lConnections.count(); i < count; i++)
 	{
@@ -238,12 +259,17 @@ void ODBC_Query::NewConnection()
 	if (m_pCurrentConnection != NULL)
 		m_pCurrentConnection->SaveGui();
 	m_pCurrentConnection = NULL;
+	QThread *pThread = new QThread(this);
 	// make a new connection
-	m_pCurrentConnection = new ODBC_Connection(ui);
+	m_pCurrentConnection = new ODBC_Connection(ui, pThread);
+	QObject::connect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
+	QObject::connect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
+	m_pCurrentConnection->moveToThread(pThread);
+	pThread->start();
 	m_pCurrentConnection->OpenConnection(sNewConnectionName);
 	ResetGui();
 	// and connect to the dsn
-	if (m_pCurrentConnection->ConnectToDatabase(sDatabase, connectiondialog.getUsername(), connectiondialog.getPassword()))
+	if (m_pCurrentConnection->ConnectToDatabase(sDatabase, ConnectionDialog.GetUsername(), ConnectionDialog.GetPassword()))
 	{
 		m_lConnections.append(m_pCurrentConnection);
 		QObject::connect(m_pCurrentConnection, SIGNAL(finished()), SLOT(Executed()));
@@ -289,7 +315,12 @@ void ODBC_Query::NewConnection()
 			ui.CloseAllConnectionsToolButton->setEnabled(true);
 	}
 	else
+	{
+		// set back to arrow cursor
+		QApplication::restoreOverrideCursor();
 		QMessageBox::critical(this, "Error", m_pCurrentConnection->GetDatabaseError(), QMessageBox::Ok);
+		return;
+	}
 	// set back to arrow cursor
 	QApplication::restoreOverrideCursor();
 }
@@ -467,6 +498,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 
 void ODBC_Query::ShowToolbarTriggered()
 {
+	// toggle toolbar
 	if (ui.ToolBar->isHidden())
 		ui.ToolBar->setHidden(false);
 	else
@@ -475,6 +507,7 @@ void ODBC_Query::ShowToolbarTriggered()
 
 void ODBC_Query::SyntaxHighlightingTriggered()
 {
+	// toggle syntax highlighter
 	if (m_pHighlighter->IsActive())
 	{
 		m_pHighlighter->SetActive(false);
@@ -495,10 +528,40 @@ void ODBC_Query::SQLCommandTextChanged()
 
 void ODBC_Query::Executed()
 {
-	m_pCurrentConnection->Executed();
+	if (m_pCurrentConnection != NULL)
+	{	
+		// get the model
+		QAbstractItemModel *pModel = m_pCurrentConnection->GetSQLResultTable();
+		if (pModel != NULL)
+		{
+			// and bind it to the tableview
+			ui.SQLResultTableView->setModel(m_pCurrentConnection->GetSQLResultTable());
+			ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
+			ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(ui.SQLResultTableView->verticalScrollBar()->minimum());
+			ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(ui.SQLResultTableView->horizontalScrollBar()->minimum());
+		}
+
+		// update log text and the query toolbar
+		ui.SQLLogTextBrowser->append(m_pCurrentConnection->GetLogText());
+		int iCurIndex = m_pCurrentConnection->GetCurrentHistoryIndex();
+		if (iCurIndex > 0 && !ui.LeftToolButton->isEnabled())
+			ui.LeftToolButton->setEnabled(true);
+		if (!ui.RightToolButton->isEnabled())
+			ui.RightToolButton->setEnabled(true);
+		if (!ui.CurrentStatementLabel->isEnabled())
+			ui.CurrentStatementLabel->setEnabled(true);	
+		ui.CurrentStatementLabel->setText(QString().setNum(iCurIndex + 1));
+	}
+
+	// restore the gui state and stop the loading animation
 	ui.ExecuteToolButton->setEnabled(true);
 	m_pLoadingAnimation->stop();
 	m_pLoadingLabel->setHidden(true);
+}
+
+void ODBC_Query::ShowOptions()
+{
+	mOptionsDialog.exec();
 }
 // </SLOTS>
 

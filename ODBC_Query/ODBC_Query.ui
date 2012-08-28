@@ -456,18 +456,22 @@
     <addaction name="ShowToolbarAction"/>
     <addaction name="SyntaxHighlightingAction"/>
    </widget>
-   <widget class="QMenu" name="ExtrasMenu">
+   <widget class="QMenu" name="ToolsMenu">
     <property name="title">
-     <string>Extras</string>
+     <string>Tools</string>
     </property>
     <addaction name="OptionsAction"/>
    </widget>
    <addaction name="FileMenu"/>
    <addaction name="ConnectionsMenu"/>
    <addaction name="ViewMenu"/>
-   <addaction name="ExtrasMenu"/>
+   <addaction name="ToolsMenu"/>
   </widget>
-  <widget class="QStatusBar" name="StatusBar"/>
+  <widget class="QStatusBar" name="StatusBar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
   <widget class="QToolBar" name="ToolBar">
    <property name="windowTitle">
     <string>toolBar</string>

@@ -2,9 +2,10 @@
 #include "ODBC_Connection.h"
 #include "Logging.h"
 
-ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui)
+ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui, QThread *ownThread)
 {
 	m_ui = ui;
+	m_pOwnThread = ownThread;
 
 	m_iCurrentHistoryIndex = 0;
 
@@ -14,8 +15,7 @@ ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui)
 	m_pQuery = NULL;
 	m_pSqlQueryModel = NULL;
 	m_pSortModel = NULL;
-
-	m_bStatementExecuted = false;
+	m_pSQLResultTable = NULL;
 }
 
 ODBC_Connection::~ODBC_Connection()
@@ -26,7 +26,13 @@ ODBC_Connection::~ODBC_Connection()
 bool ODBC_Connection::ConnectToDatabase(QString database, QString user, QString password)
 {
 	if (m_db.isOpen())
+	{
+		Logging::getInstance()->WriteLog(WARNING, "Warning in ConnectToDatabase(): Attempted to connect while connection is open");
+		#ifdef _DEBUG
+		qDebug() << "Warning in ConnectToDatabase(): Attempted to connect while connection is open";
+		#endif
 		return true;
+	}
 
 	m_db.setDatabaseName(database);
 	if (user != "")
@@ -50,40 +56,45 @@ bool ODBC_Connection::ConnectToDatabase(QString database, QString user, QString 
 		// set the status label
 		m_ui.StatusLabel->setText(QString("Connected to %1").arg(m_sConnectionName));
 		Logging::getInstance()->WriteLog(INFORMATION, QString("Connected to \"%1\"").arg(m_sConnectionName));
-		// the table and field view
-		m_ui.TableTreeWidget->clear();
-		m_ui.FieldTreeWidget->clear();
-		// populate the available tables
-		Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving database tables of connection \"%1\"...").arg(m_sConnectionName));
-		for (int i = 0, count = m_db.tables().count(); i < count; i++)
-		{
-			QString tableName = m_db.tables().value(i);
-			QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << tableName);
-			m_ui.TableTreeWidget->addTopLevelItem(item);
-			// if its the previously loaded table, select and load it
-			if (tableName == m_sLoadedTable)
-			{
-				item->setSelected(true);
-				LoadTableColumns(m_sLoadedTable);
-			}
-		}
+		LoadTables();
 		return true;
 	}
 }
 
-void ODBC_Connection::LoadTableColumns(QString sTableName)
+void ODBC_Connection::LoadTables()
+{
+	// the table and field view
+	m_ui.TableTreeWidget->clear();
+	m_ui.FieldTreeWidget->clear();
+	// populate the available tables
+	Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving database tables of connection \"%1\"...").arg(m_sConnectionName));
+	for (int i = 0, count = m_db.tables().count(); i < count; i++)
+	{
+		QString sTableName = m_db.tables().value(i);
+		QTreeWidgetItem *pItem = new QTreeWidgetItem(QStringList() << sTableName);
+		m_ui.TableTreeWidget->addTopLevelItem(pItem);
+		// if its the previously loaded table, select and load it
+		if (sTableName == m_sLoadedTable)
+		{
+			pItem->setSelected(true);
+			LoadTableColumns(m_sLoadedTable);
+		}
+	}
+}
+
+void ODBC_Connection::LoadTableColumns(QString tableName)
 {
 	if (m_db.isOpen())
 	{
 		// set wait cursor
 		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		QApplication::processEvents();
-		Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving tableinfo for table \"%1\" of connection \"%2\"...").arg(sTableName, m_sConnectionName));
+		Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving tableinfo for table \"%1\" of connection \"%2\"...").arg(tableName, m_sConnectionName));
 		bool bTableWarningShown = false;
 		m_ui.FieldTreeWidget->clear();
-		QSqlRecord records = m_db.record(sTableName);
+		QSqlRecord records = m_db.record(tableName);
 		QSqlField field;
-		QSqlIndex index = m_db.primaryIndex(sTableName);
+		QSqlIndex index = m_db.primaryIndex(tableName);
 		QString sName;
 		QSqlQuery query;
 		QString sTypeName;
@@ -93,7 +104,7 @@ void ODBC_Connection::LoadTableColumns(QString sTableName)
 		{
 			field = records.field(i);
 			sName = field.name();
-			query = m_db.exec(QString("SELECT DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '%1' AND TABLE_NAME = '%2'").arg(sName, sTableName));
+			query = m_db.exec(QString("SELECT DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = '%1' AND TABLE_NAME = '%2'").arg(sName, tableName));
 			if (query.next())
 			{
 				sTypeName = query.value(0).toString();
@@ -105,9 +116,9 @@ void ODBC_Connection::LoadTableColumns(QString sTableName)
 			{
 				if (!bTableWarningShown)
 				{	
-					Logging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName));
+					Logging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(tableName, m_sConnectionName));
 					#ifdef _DEBUG
-					qDebug() << QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName);
+					qDebug() << QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(tableName, m_sConnectionName);
 					#endif
 					bTableWarningShown = true;
 				}
@@ -122,32 +133,35 @@ void ODBC_Connection::LoadTableColumns(QString sTableName)
 		m_ui.FieldTreeWidget->resizeColumnToContents(1);
 		m_ui.FieldTreeWidget->resizeColumnToContents(2);	
 		m_ui.FieldTreeWidget->resizeColumnToContents(3);
-		m_sLoadedTable = sTableName;
-		Logging::getInstance()->WriteLog(INFORMATION, QString("Tableinfo for table \"%1\" of connection \"%2\" retrieved").arg(sTableName, m_sConnectionName));
+		m_sLoadedTable = tableName;
+		Logging::getInstance()->WriteLog(INFORMATION, QString("Tableinfo for table \"%1\" of connection \"%2\" retrieved").arg(tableName, m_sConnectionName));
 	}
 	else
 	{
-		Logging::getInstance()->WriteLog(ERROR, QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", connection isn't open").arg(sTableName, m_sConnectionName));
+		Logging::getInstance()->WriteLog(ERROR, QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", connection isn't open").arg(tableName, m_sConnectionName));
 		#ifdef _DEBUG
-		qDebug() << QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", connection isn't open").arg(sTableName, m_sConnectionName);
+		qDebug() << QString("Couldn't retrieve tableinfo for table \"%1\" of connection \"%2\", connection isn't open").arg(tableName, m_sConnectionName);
 		#endif
 	}
 	// set back to arrow cursor
 	QApplication::restoreOverrideCursor();
 }
 
-void ODBC_Connection::ExecuteQuery(QString sQuery)
+void ODBC_Connection::ExecuteQuery(QString query)
 {
 	if (m_pQuery != NULL)
 		if (m_pQuery->isActive())
 			m_pQuery->finish();
-	Logging::getInstance()->WriteLog(INFORMATION, QString("Executing statement \"%1\" of connection \"%2\"...").arg(sQuery, m_sConnectionName));
+	Logging::getInstance()->WriteLog(INFORMATION, QString("Executing statement \"%1\" of connection \"%2\"...").arg(query, m_sConnectionName));
 	mTime = mTime.currentTime();
 	mTime.start(); // count the time, the query execution takes
 	m_pQuery = new QSqlQuery(m_db);
-	m_sStatementExecutionError = "";
-	if (!m_pQuery->exec(sQuery))
-		m_sStatementExecutionError = m_pQuery->lastError().text();
+	if (!m_pQuery->exec(query))
+	{
+		QString sError = m_pQuery->lastError().text();
+		m_sLogText = QString("<table><tr><td><b>%1</b></td><td><font color='#FF0000'>%2</font></td></tr></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), sError);
+		Logging::getInstance()->WriteLog(ERROR, sError);
+	}
 	else
 	{
 		m_pSqlQueryModel = new QSqlQueryModel();
@@ -156,45 +170,23 @@ void ODBC_Connection::ExecuteQuery(QString sQuery)
 		{			
 			m_pSortModel = new QSortFilterProxyModel();
 			m_pSortModel->setSourceModel(m_pSqlQueryModel);
-			m_ui.SQLResultTableView->setModel(m_pSortModel);
-			m_ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
-			m_ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(m_ui.SQLResultTableView->verticalScrollBar()->minimum());
-			m_ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(m_ui.SQLResultTableView->horizontalScrollBar()->minimum());
+			m_pSQLResultTable = m_pSortModel;
 		}
-	}
-}
 
-void ODBC_Connection::Executed()
-{
-	if (!m_bStatementExecuted)
-		return;
-	m_bStatementExecuted = false;
-	if (m_sStatementExecutionError == "")
-	{
-		m_ui.SQLLogTextBrowser->append(QString("<table><tr><td><b>%1</b></td><td>%2</td></tr><tr><td></td><td>%3</td></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), "Query executed successfully after " + QString().setNum(mTime.elapsed()) + " ms!", QString().setNum(m_pQuery->numRowsAffected()) + " row(s) affected\n"));	
+		m_sLogText = QString("<table><tr><td><b>%1</b></td><td>%2</td></tr><tr><td></td><td>%3</td></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), "Query executed successfully after " + QString().setNum(mTime.elapsed()) + " ms!", QString().setNum(m_pQuery->numRowsAffected()) + " row(s) affected\n");	
 		Logging::getInstance()->WriteLog(INFORMATION, QString("Statement executed succssfully after %1 ms, %2 row(s) affected").arg(QString().setNum(mTime.elapsed()), QString().setNum(m_pQuery->numRowsAffected())));
 		if (m_slStatementHistory.count() != 0)
 		{
-			if (m_slStatementHistory.value(m_iCurrentHistoryIndex) != m_sNextStatement)
+			if (m_slStatementHistory.value(m_iCurrentHistoryIndex) != query)
 			{
-				m_slStatementHistory << m_sNextStatement;
+				m_slStatementHistory << query;
 				m_iCurrentHistoryIndex = (m_slStatementHistory.count() - 1);
 			}
 		}
 		else
-			m_slStatementHistory << m_sNextStatement;
-		if (m_iCurrentHistoryIndex > 0)
-			m_ui.LeftToolButton->setEnabled(true);
-		m_ui.RightToolButton->setEnabled(true);
-		if (!m_ui.CurrentStatementLabel->isEnabled())
-			m_ui.CurrentStatementLabel->setEnabled(true);
-		m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
-	}
-	else
-	{
-		m_ui.SQLLogTextBrowser->append(QString("<table><tr><td><b>%1</b></td><td><font color='#FF0000'>%2</font></td></tr></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), m_sStatementExecutionError));
-		Logging::getInstance()->WriteLog(ERROR, m_sStatementExecutionError);
+			m_slStatementHistory << query;
 	}	
+	emit Executed();
 }
 
 void ODBC_Connection::HandleLeftRightButton(bool directionRight)
@@ -248,23 +240,7 @@ void ODBC_Connection::RestoreGui()
 	m_ui.SQLLogTextBrowser->setText(m_sLogFile);
 	m_ui.SQLResultTableView->setModel(NULL);
 
-	// the table and field view
-	m_ui.TableTreeWidget->clear();
-	m_ui.FieldTreeWidget->clear();
-	// populate the available tables
-	Logging::getInstance()->WriteLog(INFORMATION, QString("Retrieving database tables of connection \"%1\"...").arg(m_sConnectionName));
-	for (int i = 0, count = m_db.tables().count(); i < count; i++)
-	{
-		QString tableName = m_db.tables().value(i);
-		QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << tableName);
-		m_ui.TableTreeWidget->addTopLevelItem(item);
-		// if its the previously loaded table, select and load it
-		if (tableName == m_sLoadedTable)
-		{
-			item->setSelected(true);
-			LoadTableColumns(m_sLoadedTable);
-		}
-	}
+	LoadTables();
 
 	int iStatementCount = m_slStatementHistory.count();
 	if (m_iCurrentHistoryIndex < iStatementCount)
@@ -313,8 +289,17 @@ void ODBC_Connection::SaveGui()
 
 void ODBC_Connection::CloseConnection()
 {
-	if (isRunning())
-		terminate();
+	if (m_pQuery != NULL)
+	{
+		if (m_pQuery->isActive())
+			m_pQuery->finish();
+	}
+
+	if (m_pOwnThread != NULL)
+	{
+		if (m_pOwnThread->isRunning())
+			m_pOwnThread->quit();
+	}
 
 	if (m_pQuery != NULL)
 	{
@@ -337,12 +322,4 @@ void ODBC_Connection::CloseConnection()
     m_db.close();
 	m_db = QSqlDatabase();
 	QSqlDatabase::removeDatabase(m_sConnectionName);
-}
-
-void ODBC_Connection::run()
-{
-	ExecuteQuery(m_sNextStatement);
-	m_bStatementExecuted = true;
-	emit finished();
-	exec();
 }
