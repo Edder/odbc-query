@@ -66,8 +66,6 @@ void ODBC_ConnectionDialog::ConnectButtonClicked()
 
 void ODBC_ConnectionDialog::SystemDSNitemClicked(QTreeWidgetItem *item, int column)
 {
-	ui.UsernameLineEdit->clear();
-	ui.PasswordLineEdit->clear();
 	ui.UserDSNTreeWidget->clearSelection();
 	m_sSelectedDatabase = item->text(0);
 	m_bSystemDSNSelected = true;
@@ -81,14 +79,16 @@ void ODBC_ConnectionDialog::SystemDSNitemClicked(QTreeWidgetItem *item, int colu
 		ui.PasswordLineEdit->setText(Login.value("password").toString());
 	}
 	else
+	{
 		ui.RememberCheckBox->setChecked(false);
+		ui.UsernameLineEdit->clear();
+		ui.PasswordLineEdit->clear();
+	}
 	Login.endGroup();
 }
 
 void ODBC_ConnectionDialog::UserDSNitemClicked(QTreeWidgetItem *item, int column)
 {
-	ui.UsernameLineEdit->clear();
-	ui.PasswordLineEdit->clear();
 	ui.SystemDSNTreeWidget->clearSelection();
 	m_sSelectedDatabase = item->text(0);
 	m_bSystemDSNSelected = false;
@@ -102,6 +102,10 @@ void ODBC_ConnectionDialog::UserDSNitemClicked(QTreeWidgetItem *item, int column
 		ui.PasswordLineEdit->setText(Login.value("password").toString());
 	}
 	else
+	{
 		ui.RememberCheckBox->setChecked(false);
+		ui.UsernameLineEdit->clear();
+		ui.PasswordLineEdit->clear();
+	}
 	Login.endGroup();
 }

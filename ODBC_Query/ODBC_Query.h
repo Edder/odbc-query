@@ -24,7 +24,6 @@ class ODBC_Query : public QMainWindow
 		bool eventFilter(QObject* object, QEvent* event);
 
 		Ui::ODBC_QueryClass ui;
-		ODBC_OptionsDialog mOptionsDialog;
 		ODBC_Connection* m_pCurrentConnection;
 		QList<ODBC_Connection*> m_lConnections;
 		ODBC_CustomSyntaxHighlighter* m_pHighlighter;

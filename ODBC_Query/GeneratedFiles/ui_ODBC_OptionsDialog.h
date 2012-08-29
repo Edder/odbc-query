@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_OptionsDialog.ui'
 **
-** Created: Tue 28. Aug 21:37:31 2012
+** Created: Wed 29. Aug 21:58:35 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -37,9 +37,9 @@ public:
     QFormLayout *formLayout;
     QVBoxLayout *VerticalLayout;
     QHBoxLayout *HorizontalLayout;
-    QLabel *label;
-    QSpinBox *spinBox;
-    QSpacerItem *horizontalSpacer;
+    QLabel *TimeoutLabel;
+    QSpinBox *TimeoutSpinBox;
+    QSpacerItem *TimeoutSpacer;
     QWidget *StatementsTab;
     QHBoxLayout *MainHorizontalLayout;
     QPushButton *OKButton;
@@ -55,6 +55,7 @@ public:
         icon.addFile(QString::fromUtf8(":/ODBC_Query/Resources/options.png"), QSize(), QIcon::Normal, QIcon::Off);
         OptionsDialog->setWindowIcon(icon);
         verticalLayout = new QVBoxLayout(OptionsDialog);
+        verticalLayout->setContentsMargins(5, 5, 5, 5);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         OptionsTabWidget = new QTabWidget(OptionsDialog);
         OptionsTabWidget->setObjectName(QString::fromUtf8("OptionsTabWidget"));
@@ -70,25 +71,26 @@ public:
         HorizontalLayout = new QHBoxLayout();
         HorizontalLayout->setSpacing(6);
         HorizontalLayout->setObjectName(QString::fromUtf8("HorizontalLayout"));
-        label = new QLabel(ConnectionTab);
-        label->setObjectName(QString::fromUtf8("label"));
+        TimeoutLabel = new QLabel(ConnectionTab);
+        TimeoutLabel->setObjectName(QString::fromUtf8("TimeoutLabel"));
         QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
-        label->setSizePolicy(sizePolicy);
-        label->setTextFormat(Qt::AutoText);
+        sizePolicy.setHeightForWidth(TimeoutLabel->sizePolicy().hasHeightForWidth());
+        TimeoutLabel->setSizePolicy(sizePolicy);
+        TimeoutLabel->setTextFormat(Qt::AutoText);
 
-        HorizontalLayout->addWidget(label);
+        HorizontalLayout->addWidget(TimeoutLabel);
 
-        spinBox = new QSpinBox(ConnectionTab);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
+        TimeoutSpinBox = new QSpinBox(ConnectionTab);
+        TimeoutSpinBox->setObjectName(QString::fromUtf8("TimeoutSpinBox"));
+        TimeoutSpinBox->setMaximum(300);
 
-        HorizontalLayout->addWidget(spinBox);
+        HorizontalLayout->addWidget(TimeoutSpinBox);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        TimeoutSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        HorizontalLayout->addItem(horizontalSpacer);
+        HorizontalLayout->addItem(TimeoutSpacer);
 
 
         VerticalLayout->addLayout(HorizontalLayout);
@@ -136,17 +138,17 @@ public:
     {
         OptionsDialog->setWindowTitle(QApplication::translate("OptionsDialog", "Options", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        label->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
+        TimeoutLabel->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        label->setStatusTip(QString());
+        TimeoutLabel->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
-        label->setText(QApplication::translate("OptionsDialog", "Timeout:", 0, QApplication::UnicodeUTF8));
+        TimeoutLabel->setText(QApplication::translate("OptionsDialog", "Timeout:", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        spinBox->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
+        TimeoutSpinBox->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        spinBox->setStatusTip(QString());
+        TimeoutSpinBox->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(ConnectionTab), QApplication::translate("OptionsDialog", "Connection", 0, QApplication::UnicodeUTF8));
         OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(StatementsTab), QApplication::translate("OptionsDialog", "Statements", 0, QApplication::UnicodeUTF8));

@@ -71,9 +71,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ODBC_ConnectionDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ODBC_Connection.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -88,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ODBC_OptionsDialog.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ODBC_Logging.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,11 +106,11 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ODBC_OptionsDialog.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ODBC_Logging.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

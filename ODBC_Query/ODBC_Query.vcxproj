@@ -175,7 +175,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Logging.cpp" />
+    <ClCompile Include="ODBC_Logging.cpp" />
     <ClCompile Include="ODBC_ConnectionDialog.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ODBC_Query.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -216,7 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_ODBC_OptionsDialog.h" />
-    <ClInclude Include="Logging.h" />
+    <ClInclude Include="ODBC_Logging.h" />
     <CustomBuild Include="ODBC_OptionsDialog.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ODBC_OptionsDialog.h...</Message>

@@ -1,21 +1,21 @@
 #include "precompiled.h"
-#include "Logging.h"
+#include "ODBC_Logging.h"
 
-Logging::Logging()
+ODBC_Logging::ODBC_Logging()
 {
 	m_bInitialized = false;
 }
 
-Logging* Logging::m_pInstance = NULL; 
+ODBC_Logging* ODBC_Logging::m_pInstance = NULL; 
 
-Logging* Logging::getInstance()
+ODBC_Logging* ODBC_Logging::getInstance()
 {
 	if (!m_pInstance)
-		m_pInstance = new Logging;
+		m_pInstance = new ODBC_Logging;
 	return m_pInstance;
 }
 
-bool Logging::Init()
+bool ODBC_Logging::Init()
 {
 	if (m_bInitialized)
 		return false;
@@ -39,7 +39,7 @@ bool Logging::Init()
 		return false;
 }
 
-void Logging::Close()
+void ODBC_Logging::Close()
 {
 	if (!m_bInitialized)
 		return;
@@ -49,7 +49,7 @@ void Logging::Close()
 	m_bInitialized = false;
 }
 
-void Logging::WriteLog(int logtype, QString text)
+void ODBC_Logging::WriteLog(int logtype, QString text)
 {
 	QDateTime timestamp = QDateTime::currentDateTime();
 	if (!m_bInitialized)
@@ -83,4 +83,10 @@ void Logging::WriteLog(int logtype, QString text)
 	}
 	mFile.write(QString("(%1) %2: %3\n").arg(timestamp.toString("dd.MM.yyyy - hh:mm:ss"), sLogtype, text).toAscii());
 	mFile.flush();
+}
+
+void ODBC_Logging::ExitInstance()
+{
+	delete m_pInstance;
+	m_pInstance = NULL;
 }

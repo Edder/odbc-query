@@ -18,6 +18,9 @@
     <normaloff>:/ODBC_Query/Resources/options.png</normaloff>:/ODBC_Query/Resources/options.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
     <widget class="QTabWidget" name="OptionsTabWidget">
      <property name="currentIndex">
@@ -51,7 +54,7 @@
             <number>6</number>
            </property>
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="TimeoutLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -73,17 +76,20 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox">
+            <widget class="QSpinBox" name="TimeoutSpinBox">
              <property name="toolTip">
               <string>Sets the connection timeout in seconds</string>
              </property>
              <property name="statusTip">
               <string/>
              </property>
+             <property name="maximum">
+              <number>300</number>
+             </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer">
+            <spacer name="TimeoutSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
