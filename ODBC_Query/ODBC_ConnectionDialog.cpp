@@ -12,6 +12,7 @@ void ODBC_ConnectionDialog::Init()
 	setWindowFlags(flags);
 
 	m_bChoiceMade = false;
+	m_bClosed = false;
 
 	QObject::connect(ui.ConnectButton, SIGNAL(clicked()), SLOT(ConnectButtonClicked()));
 	QObject::connect(ui.CancelButton, SIGNAL(clicked()), SLOT(CancelButtonClicked()));
@@ -109,3 +110,10 @@ void ODBC_ConnectionDialog::UserDSNitemClicked(QTreeWidgetItem *item, int column
 	}
 	Login.endGroup();
 }
+
+void ODBC_ConnectionDialog::close()
+{ 
+	if (!m_bChoiceMade) 
+		m_bClosed = true; 
+	QDialog::close(); 
+};

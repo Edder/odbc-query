@@ -17,6 +17,7 @@ class ODBC_ConnectionDialog : public QDialog
 		QString GetDatabase() { return m_sSelectedDatabase; };
 		QString GetUsername() { return m_sEnteredUsername; };
 		QString GetPassword() { return m_sEnteredPassword; };
+		bool IsClosed() { return m_bClosed; };
 
 	private:
 		Ui::ConnectionDialog ui;
@@ -25,12 +26,16 @@ class ODBC_ConnectionDialog : public QDialog
 		QString m_sEnteredPassword;
 		bool m_bChoiceMade;
 		bool m_bSystemDSNSelected;
+		bool m_bClosed;
 
 	private slots:
 		void ConnectButtonClicked();
 		void CancelButtonClicked() { close(); };
 		void SystemDSNitemClicked(QTreeWidgetItem *item, int column);
 		void UserDSNitemClicked(QTreeWidgetItem *item, int column);
+
+	protected:
+		void close();
 };
 
 #endif // ODBC_CONNECTIONDIALOG_H
