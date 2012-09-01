@@ -16,6 +16,7 @@ class ODBC_OptionsDialog : public QDialog
 		
 		// Getter / Setter
 		int GetConnectionTimeout() { return m_iConnectionTimeout; };
+		bool FetchResultsDynamically() {return m_bFetchDynamically; };
 
 	private:
 		ODBC_OptionsDialog();
@@ -26,6 +27,7 @@ class ODBC_OptionsDialog : public QDialog
 		bool m_bInitialized;
 		Ui::OptionsDialog ui;
 		int m_iConnectionTimeout;
+		bool m_bFetchDynamically;
 
 	private slots:
 		void OKButtonClicked();

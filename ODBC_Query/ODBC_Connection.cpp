@@ -168,7 +168,12 @@ void ODBC_Connection::ExecuteQuery(QString query)
 		m_pSqlQueryModel = new QSqlQueryModel();
 		m_pSqlQueryModel->setQuery(*m_pQuery);
 		if (m_pSqlQueryModel->rowCount() != 0)
-		{			
+		{	
+			if (!ODBC_OptionsDialog::getInstance()->FetchResultsDynamically())
+			{
+				while (m_pSqlQueryModel->canFetchMore())
+					m_pSqlQueryModel->fetchMore();
+			}
 			m_pSortModel = new QSortFilterProxyModel();
 			m_pSortModel->setSourceModel(m_pSqlQueryModel);
 			m_pSQLResultTable = m_pSortModel;

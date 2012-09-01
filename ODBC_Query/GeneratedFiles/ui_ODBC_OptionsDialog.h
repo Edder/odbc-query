@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_OptionsDialog.ui'
 **
-** Created: Wed 29. Aug 21:58:35 2012
+** Created: Sat 1. Sep 09:05:38 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QCheckBox>
 #include <QtGui/QDialog>
 #include <QtGui/QFormLayout>
 #include <QtGui/QHBoxLayout>
@@ -41,6 +42,11 @@ public:
     QSpinBox *TimeoutSpinBox;
     QSpacerItem *TimeoutSpacer;
     QWidget *StatementsTab;
+    QFormLayout *formLayout_2;
+    QVBoxLayout *VerticalLayout_2;
+    QHBoxLayout *HorizontalLayout_2;
+    QCheckBox *FetchResultsCheckBox;
+    QSpacerItem *FetchResultsSpacer;
     QHBoxLayout *MainHorizontalLayout;
     QPushButton *OKButton;
     QPushButton *CancelButton;
@@ -101,6 +107,29 @@ public:
         OptionsTabWidget->addTab(ConnectionTab, QString());
         StatementsTab = new QWidget();
         StatementsTab->setObjectName(QString::fromUtf8("StatementsTab"));
+        formLayout_2 = new QFormLayout(StatementsTab);
+        formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        formLayout_2->setContentsMargins(5, 11, -1, -1);
+        VerticalLayout_2 = new QVBoxLayout();
+        VerticalLayout_2->setObjectName(QString::fromUtf8("VerticalLayout_2"));
+        HorizontalLayout_2 = new QHBoxLayout();
+        HorizontalLayout_2->setSpacing(6);
+        HorizontalLayout_2->setObjectName(QString::fromUtf8("HorizontalLayout_2"));
+        FetchResultsCheckBox = new QCheckBox(StatementsTab);
+        FetchResultsCheckBox->setObjectName(QString::fromUtf8("FetchResultsCheckBox"));
+
+        HorizontalLayout_2->addWidget(FetchResultsCheckBox);
+
+        FetchResultsSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        HorizontalLayout_2->addItem(FetchResultsSpacer);
+
+
+        VerticalLayout_2->addLayout(HorizontalLayout_2);
+
+
+        formLayout_2->setLayout(0, QFormLayout::FieldRole, VerticalLayout_2);
+
         OptionsTabWidget->addTab(StatementsTab, QString());
 
         verticalLayout->addWidget(OptionsTabWidget);
@@ -151,6 +180,10 @@ public:
         TimeoutSpinBox->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(ConnectionTab), QApplication::translate("OptionsDialog", "Connection", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        FetchResultsCheckBox->setToolTip(QApplication::translate("OptionsDialog", "Determines whether select statements results should be fetched dynamically", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        FetchResultsCheckBox->setText(QApplication::translate("OptionsDialog", "Fetch results dynamically", 0, QApplication::UnicodeUTF8));
         OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(StatementsTab), QApplication::translate("OptionsDialog", "Statements", 0, QApplication::UnicodeUTF8));
         OKButton->setText(QApplication::translate("OptionsDialog", "OK", 0, QApplication::UnicodeUTF8));
         CancelButton->setText(QApplication::translate("OptionsDialog", "Cancel", 0, QApplication::UnicodeUTF8));
