@@ -40,7 +40,7 @@ void ODBC_ConnectionDialog::Init()
 
 void ODBC_ConnectionDialog::ConnectButtonClicked()
 {	
-	if (m_sSelectedDatabase == "")
+	if (m_sSelectedDatabase.isEmpty())
 	{
 		QMessageBox::information(this, "Database selection", "You need to select a ODBC Data Source to connect!", QMessageBox::Ok);
 		return;

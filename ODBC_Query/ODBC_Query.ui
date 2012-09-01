@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ODBC_Query</string>
+   <string>ODBC Query</string>
   </property>
   <property name="windowIcon">
    <iconset resource="odbc_query.qrc">
@@ -206,7 +206,7 @@
          <bool>true</bool>
         </property>
         <property name="sortingEnabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <attribute name="verticalHeaderDefaultSectionSize">
          <number>20</number>
@@ -421,7 +421,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="ActionExit"/>
+    <addaction name="ExitAction"/>
    </widget>
    <widget class="QMenu" name="ConnectionsMenu">
     <property name="title">
@@ -462,10 +462,17 @@
     </property>
     <addaction name="OptionsAction"/>
    </widget>
+   <widget class="QMenu" name="HelpMenu">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="AboutAction"/>
+   </widget>
    <addaction name="FileMenu"/>
    <addaction name="ConnectionsMenu"/>
    <addaction name="ViewMenu"/>
    <addaction name="ToolsMenu"/>
+   <addaction name="HelpMenu"/>
   </widget>
   <widget class="QStatusBar" name="StatusBar">
    <property name="sizeGripEnabled">
@@ -483,7 +490,7 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <action name="ActionExit">
+  <action name="ExitAction">
    <property name="icon">
     <iconset resource="odbc_query.qrc">
      <normaloff>:/ODBC_Query/Resources/exit.png</normaloff>:/ODBC_Query/Resources/exit.png</iconset>
@@ -559,6 +566,11 @@
    </property>
    <property name="text">
     <string>Options</string>
+   </property>
+  </action>
+  <action name="AboutAction">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

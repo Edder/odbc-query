@@ -9,7 +9,7 @@ ODBC_Query::ODBC_Query(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 {
 	ui.setupUi(this);
 
-	QCoreApplication::setApplicationName("ODBC Query");
+	QCoreApplication::setApplicationName(APPLICATION_NAME);
 
 	// initialize the logging
 	ODBC_Logging::getInstance()->Init();
@@ -74,8 +74,8 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.ExecuteToolButton, SIGNAL(clicked()), SLOT(ExecuteButtonClicked()));
 	QObject::connect(ui.LeftToolButton, SIGNAL(clicked()), SLOT(LeftButtonClicked()));
 	QObject::connect(ui.RightToolButton, SIGNAL(clicked()), SLOT(RightButtonClicked()));
-	QObject::connect(ui.TableTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(TableItemClicked(QTreeWidgetItem*, int)));
-	QObject::connect(ui.ActionExit, SIGNAL(triggered()), SLOT(Exit()));
+	QObject::connect(ui.TableTreeWidget, SIGNAL(itemSelectionChanged()), SLOT(TableItemSelectionChanged()));
+	QObject::connect(ui.ExitAction, SIGNAL(triggered()), SLOT(Exit()));
 	QObject::connect(ui.NewConnectionAction, SIGNAL(triggered()), SLOT(NewConnection()));
 	QObject::connect(ui.AddConnectionToolButton, SIGNAL(clicked()), SLOT(NewConnection()));
 	QObject::connect(ui.CloseAllConnectionsAction, SIGNAL(triggered()), SLOT(CloseAllConnections()));
@@ -84,6 +84,7 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.SyntaxHighlightingAction, SIGNAL(triggered()), SLOT(SyntaxHighlightingTriggered()));
 	QObject::connect(ui.SQLCommandTextEdit, SIGNAL(textChanged()), SLOT(SQLCommandTextChanged()));
 	QObject::connect(ui.OptionsAction, SIGNAL(triggered()), SLOT(ShowOptions()));
+	QObject::connect(ui.AboutAction, SIGNAL(triggered()), SLOT(ShowAbout()));
 
 	// initialize options menu
 	ODBC_OptionsDialog::getInstance()->Init();
@@ -184,8 +185,14 @@ void ODBC_Query::ExecuteButtonClicked()
 			#endif
 			return;
 		}
+		QStringList lQueries = sQuery.split(';');
 		// send the signal to the execute thread
-		emit ExecuteQuery(sQuery);
+		for (int i = 0, count = lQueries.count(); i < count; i++)
+		{
+			QString sNewQuery = lQueries.value(i);
+			if (!sNewQuery.isEmpty())
+				emit ExecuteQuery(sNewQuery);
+		}
 
 		// disable execute button and start the loading animation
 		ui.ExecuteToolButton->setDisabled(true);
@@ -213,10 +220,18 @@ void ODBC_Query::RightButtonClicked()
 		m_pCurrentConnection->HandleLeftRightButton(true);
 }
 
-void ODBC_Query::TableItemClicked(QTreeWidgetItem *item, int column)
+void ODBC_Query::TableItemSelectionChanged()
 {
-	if (m_pCurrentConnection != NULL && item != NULL)
-		m_pCurrentConnection->LoadTableColumns(item->text(0));
+	if (m_pCurrentConnection != NULL)
+	{
+		QList<QTreeWidgetItem*> lItems = ui.TableTreeWidget->selectedItems();
+		if (lItems.count() == 0)
+			return;
+
+		QTreeWidgetItem* pItem = lItems.value(0);
+		if (pItem != NULL)
+			m_pCurrentConnection->LoadTableColumns(pItem->text(0));
+	}
 }
 
 void ODBC_Query::Exit()
@@ -575,6 +590,11 @@ void ODBC_Query::Executed()
 void ODBC_Query::ShowOptions()
 {
 	ODBC_OptionsDialog::getInstance()->exec();
+}
+
+void ODBC_Query::ShowAbout()
+{
+	QMessageBox::about(this, QString("About %1").arg(APPLICATION_NAME), QString("<b>ODBC Query (build: %1)</b><br/><br/>written by Daniel Rosenauer<br/><br/>mail: <a href='mailto:d.rosenauer@googlemail.com'>d.rosenauer@gmail.com</a><br/>github: <a href='https://github.com/Edder/odbc-query'>project page</a><br/><br/>linked against Qt %2").arg(QString().setNum(REVISION), QT_VERSION_STR));
 }
 // </SLOTS>
 

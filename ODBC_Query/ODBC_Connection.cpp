@@ -15,7 +15,6 @@ ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui, QThread *ownThread)
 
 	m_pQuery = NULL;
 	m_pSqlQueryModel = NULL;
-	m_pSortModel = NULL;
 	m_pSQLResultTable = NULL;
 }
 
@@ -174,9 +173,7 @@ void ODBC_Connection::ExecuteQuery(QString query)
 				while (m_pSqlQueryModel->canFetchMore())
 					m_pSqlQueryModel->fetchMore();
 			}
-			m_pSortModel = new QSortFilterProxyModel();
-			m_pSortModel->setSourceModel(m_pSqlQueryModel);
-			m_pSQLResultTable = m_pSortModel;
+			m_pSQLResultTable = m_pSqlQueryModel;
 		}
 
 		m_sLogText = QString("<table><tr><td><b>%1</b></td><td>%2</td></tr><tr><td></td><td>%3</td></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), "Query executed successfully after " + QString().setNum(mTime.elapsed()) + " ms!", QString().setNum(m_pQuery->numRowsAffected()) + " row(s) affected\n");	
@@ -256,13 +253,13 @@ void ODBC_Connection::RestoreGui()
 
 	m_ui.CurrentStatementLabel->setText(QString().setNum(m_iCurrentHistoryIndex + 1));
 
-	if (m_ui.SQLCommandTextEdit->toPlainText() == "")
+	if (m_ui.SQLCommandTextEdit->toPlainText().isEmpty())
 		m_ui.ExecuteToolButton->setDisabled(true);
 
 	if (m_iCurrentHistoryIndex == 0)
 	{
 		m_ui.LeftToolButton->setDisabled(true);
-		if (m_ui.SQLCommandTextEdit->toPlainText() == "")
+		if (m_ui.SQLCommandTextEdit->toPlainText().isEmpty())
 			m_ui.RightToolButton->setDisabled(true);
 		else
 		{
@@ -317,12 +314,6 @@ void ODBC_Connection::CloseConnection()
 	{
 		delete m_pSqlQueryModel;
 		m_pSqlQueryModel = NULL;
-	}
-
-	if (m_pSortModel != NULL)
-	{
-		delete m_pSortModel;
-		m_pSortModel = NULL;
 	}
 
     m_db.close();

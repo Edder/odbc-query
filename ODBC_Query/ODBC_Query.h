@@ -8,6 +8,9 @@
 #include "ODBC_CustomSyntaxHighlighter.h"
 #include "ODBC_OptionsDialog.h"
 
+#define REVISION 16
+#define APPLICATION_NAME "ODBC Query"
+
 class ODBC_Query : public QMainWindow
 {
 	Q_OBJECT
@@ -34,7 +37,7 @@ class ODBC_Query : public QMainWindow
 		void ExecuteButtonClicked();
 		void LeftButtonClicked();
 		void RightButtonClicked();
-		void TableItemClicked(QTreeWidgetItem* item, int column);
+		void TableItemSelectionChanged();
 		void Exit();
 		void NewConnection();
 		void CloseAllConnections(bool close = false);
@@ -43,6 +46,7 @@ class ODBC_Query : public QMainWindow
 		void SyntaxHighlightingTriggered();
 		void SQLCommandTextChanged();
 		void ShowOptions();
+		void ShowAbout();
 
 	public slots:	
 		void Executed();

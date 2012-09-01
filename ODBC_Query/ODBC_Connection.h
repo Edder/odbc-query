@@ -35,7 +35,6 @@ class ODBC_Connection : public QObject
 		Ui::ODBC_QueryClass m_ui;
 		QSqlDatabase m_db;
 		QSqlQuery* m_pQuery;
-		QSortFilterProxyModel* m_pSortModel;
 		QSqlQueryModel* m_pSqlQueryModel;
 		QString m_sCurrentStatement;
 		QStringList m_slStatementHistory;
