@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_Query.ui'
 **
-** Created: Sat 1. Sep 23:23:38 2012
+** Created: Sun 2. Sep 15:01:30 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -121,6 +121,9 @@ public:
         OptionsAction->setIcon(icon4);
         AboutAction = new QAction(ODBC_QueryClass);
         AboutAction->setObjectName(QString::fromUtf8("AboutAction"));
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/ODBC_Query/Resources/info.png"), QSize(), QIcon::Normal, QIcon::Off);
+        AboutAction->setIcon(icon5);
         CentralWidget = new QWidget(ODBC_QueryClass);
         CentralWidget->setObjectName(QString::fromUtf8("CentralWidget"));
         horizontalLayout = new QHBoxLayout(CentralWidget);
@@ -138,9 +141,9 @@ public:
         OpenConnectionsToolButton = new QToolButton(CentralWidget);
         OpenConnectionsToolButton->setObjectName(QString::fromUtf8("OpenConnectionsToolButton"));
         OpenConnectionsToolButton->setEnabled(false);
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/ODBC_Query/Resources/database.png"), QSize(), QIcon::Normal, QIcon::Off);
-        OpenConnectionsToolButton->setIcon(icon5);
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/ODBC_Query/Resources/database.png"), QSize(), QIcon::Normal, QIcon::Off);
+        OpenConnectionsToolButton->setIcon(icon6);
         OpenConnectionsToolButton->setIconSize(QSize(32, 32));
         OpenConnectionsToolButton->setPopupMode(QToolButton::InstantPopup);
         OpenConnectionsToolButton->setAutoRaise(true);
@@ -228,9 +231,9 @@ public:
         sizePolicy.setHeightForWidth(ExecuteToolButton->sizePolicy().hasHeightForWidth());
         ExecuteToolButton->setSizePolicy(sizePolicy);
         ExecuteToolButton->setLayoutDirection(Qt::LeftToRight);
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/ODBC_Query/Resources/play_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        ExecuteToolButton->setIcon(icon6);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/ODBC_Query/Resources/play_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        ExecuteToolButton->setIcon(icon7);
         ExecuteToolButton->setIconSize(QSize(20, 20));
         ExecuteToolButton->setCheckable(false);
         ExecuteToolButton->setAutoRaise(true);
@@ -254,9 +257,9 @@ public:
         LeftToolButton = new QToolButton(horizontalLayoutWidget);
         LeftToolButton->setObjectName(QString::fromUtf8("LeftToolButton"));
         LeftToolButton->setEnabled(false);
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/ODBC_Query/Resources/left_arrow.png"), QSize(), QIcon::Normal, QIcon::Off);
-        LeftToolButton->setIcon(icon7);
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/ODBC_Query/Resources/left_arrow.png"), QSize(), QIcon::Normal, QIcon::Off);
+        LeftToolButton->setIcon(icon8);
         LeftToolButton->setIconSize(QSize(20, 20));
         LeftToolButton->setAutoRaise(true);
 
@@ -273,9 +276,9 @@ public:
         RightToolButton->setEnabled(false);
         sizePolicy.setHeightForWidth(RightToolButton->sizePolicy().hasHeightForWidth());
         RightToolButton->setSizePolicy(sizePolicy);
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/ODBC_Query/Resources/right_arrow.png"), QSize(), QIcon::Normal, QIcon::Off);
-        RightToolButton->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/ODBC_Query/Resources/right_arrow.png"), QSize(), QIcon::Normal, QIcon::Off);
+        RightToolButton->setIcon(icon9);
         RightToolButton->setIconSize(QSize(20, 20));
         RightToolButton->setAutoRaise(true);
 
@@ -330,7 +333,7 @@ public:
         OpenConnectionsMenu = new QMenu(ConnectionsMenu);
         OpenConnectionsMenu->setObjectName(QString::fromUtf8("OpenConnectionsMenu"));
         OpenConnectionsMenu->setEnabled(false);
-        OpenConnectionsMenu->setIcon(icon5);
+        OpenConnectionsMenu->setIcon(icon6);
         ViewMenu = new QMenu(MenuBar);
         ViewMenu->setObjectName(QString::fromUtf8("ViewMenu"));
         ToolsMenu = new QMenu(MenuBar);
@@ -373,15 +376,15 @@ public:
         ExitAction->setToolTip(QApplication::translate("ODBC_QueryClass", "Close program", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        ExitAction->setStatusTip(QApplication::translate("ODBC_QueryClass", "Close program", 0, QApplication::UnicodeUTF8));
+        ExitAction->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         NewConnectionAction->setText(QApplication::translate("ODBC_QueryClass", "New connection", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_STATUSTIP
-        NewConnectionAction->setStatusTip(QApplication::translate("ODBC_QueryClass", "New connection", 0, QApplication::UnicodeUTF8));
+        NewConnectionAction->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         CloseAllConnectionsAction->setText(QApplication::translate("ODBC_QueryClass", "Close all connections", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_STATUSTIP
-        CloseAllConnectionsAction->setStatusTip(QApplication::translate("ODBC_QueryClass", "Close all connections", 0, QApplication::UnicodeUTF8));
+        CloseAllConnectionsAction->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         actionTest->setText(QApplication::translate("ODBC_QueryClass", "test", 0, QApplication::UnicodeUTF8));
         ShowToolbarAction->setText(QApplication::translate("ODBC_QueryClass", "Show toolbar", 0, QApplication::UnicodeUTF8));
@@ -392,7 +395,7 @@ public:
         AddConnectionToolButton->setToolTip(QApplication::translate("ODBC_QueryClass", "New connection", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        AddConnectionToolButton->setStatusTip(QApplication::translate("ODBC_QueryClass", "New connection", 0, QApplication::UnicodeUTF8));
+        AddConnectionToolButton->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         AddConnectionToolButton->setText(QString());
         OpenConnectionsToolButton->setText(QString());
@@ -400,7 +403,7 @@ public:
         CloseAllConnectionsToolButton->setToolTip(QApplication::translate("ODBC_QueryClass", "Close all connections", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        CloseAllConnectionsToolButton->setStatusTip(QApplication::translate("ODBC_QueryClass", "Close all connections", 0, QApplication::UnicodeUTF8));
+        CloseAllConnectionsToolButton->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         CloseAllConnectionsToolButton->setText(QString());
         StatusLabel->setText(QString());
@@ -417,7 +420,7 @@ public:
         OpenConnectionsMenu->setToolTip(QApplication::translate("ODBC_QueryClass", "Open existing connections", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        OpenConnectionsMenu->setStatusTip(QApplication::translate("ODBC_QueryClass", "Open existing connections", 0, QApplication::UnicodeUTF8));
+        OpenConnectionsMenu->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
         OpenConnectionsMenu->setTitle(QApplication::translate("ODBC_QueryClass", "Open connections...", 0, QApplication::UnicodeUTF8));
         ViewMenu->setTitle(QApplication::translate("ODBC_QueryClass", "View", 0, QApplication::UnicodeUTF8));

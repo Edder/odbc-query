@@ -25,7 +25,7 @@
        <string>New connection</string>
       </property>
       <property name="statusTip">
-       <string>New connection</string>
+       <string/>
       </property>
       <property name="text">
        <string/>
@@ -80,7 +80,7 @@
        <string>Close all connections</string>
       </property>
       <property name="statusTip">
-       <string>Close all connections</string>
+       <string/>
       </property>
       <property name="text">
        <string/>
@@ -435,7 +435,7 @@
       <string>Open existing connections</string>
      </property>
      <property name="statusTip">
-      <string>Open existing connections</string>
+      <string/>
      </property>
      <property name="title">
       <string>Open connections...</string>
@@ -502,7 +502,7 @@
     <string>Close program</string>
    </property>
    <property name="statusTip">
-    <string>Close program</string>
+    <string/>
    </property>
   </action>
   <action name="NewConnectionAction">
@@ -514,7 +514,7 @@
     <string>New connection</string>
    </property>
    <property name="statusTip">
-    <string>New connection</string>
+    <string/>
    </property>
   </action>
   <action name="CloseAllConnectionsAction">
@@ -529,7 +529,7 @@
     <string>Close all connections</string>
    </property>
    <property name="statusTip">
-    <string>Close all connections</string>
+    <string/>
    </property>
   </action>
   <action name="actionTest">
@@ -569,6 +569,10 @@
    </property>
   </action>
   <action name="AboutAction">
+   <property name="icon">
+    <iconset resource="odbc_query.qrc">
+     <normaloff>:/ODBC_Query/Resources/info.png</normaloff>:/ODBC_Query/Resources/info.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
