@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_Query.ui'
 **
-** Created: Sun 2. Sep 15:01:30 2012
+** Created: Tue 4. Sep 21:20:32 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -54,7 +54,6 @@ public:
     QSplitter *MainHorizontalSplitter;
     QSplitter *HorizontalSplitter;
     QTreeWidget *TableTreeWidget;
-    QTreeWidget *FieldTreeWidget;
     QSplitter *VerticalSplitter;
     ODBC_TableView *SQLResultTableView;
     QWidget *horizontalLayoutWidget;
@@ -86,7 +85,7 @@ public:
             ODBC_QueryClass->setObjectName(QString::fromUtf8("ODBC_QueryClass"));
         ODBC_QueryClass->resize(1074, 672);
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/ODBC_Query/Resources/database_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/ODBC_Query/Resources/database_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
         ODBC_QueryClass->setWindowIcon(icon);
         ExitAction = new QAction(ODBC_QueryClass);
         ExitAction->setObjectName(QString::fromUtf8("ExitAction"));
@@ -175,26 +174,14 @@ public:
         __qtreewidgetitem->setText(0, QString::fromUtf8("1"));
         TableTreeWidget->setHeaderItem(__qtreewidgetitem);
         TableTreeWidget->setObjectName(QString::fromUtf8("TableTreeWidget"));
-        TableTreeWidget->setAlternatingRowColors(true);
-        TableTreeWidget->setIndentation(0);
-        TableTreeWidget->setItemsExpandable(false);
-        TableTreeWidget->setExpandsOnDoubleClick(false);
+        TableTreeWidget->setAlternatingRowColors(false);
+        TableTreeWidget->setIndentation(15);
+        TableTreeWidget->setRootIsDecorated(true);
+        TableTreeWidget->setItemsExpandable(true);
+        TableTreeWidget->setAnimated(true);
+        TableTreeWidget->setExpandsOnDoubleClick(true);
         HorizontalSplitter->addWidget(TableTreeWidget);
-        FieldTreeWidget = new QTreeWidget(HorizontalSplitter);
-        QTreeWidgetItem *__qtreewidgetitem1 = new QTreeWidgetItem();
-        __qtreewidgetitem1->setText(3, QString::fromUtf8("4"));
-        __qtreewidgetitem1->setText(2, QString::fromUtf8("3"));
-        __qtreewidgetitem1->setText(1, QString::fromUtf8("2"));
-        __qtreewidgetitem1->setText(0, QString::fromUtf8("1"));
-        FieldTreeWidget->setHeaderItem(__qtreewidgetitem1);
-        FieldTreeWidget->setObjectName(QString::fromUtf8("FieldTreeWidget"));
-        FieldTreeWidget->setAlternatingRowColors(true);
-        FieldTreeWidget->setIndentation(0);
-        FieldTreeWidget->setItemsExpandable(false);
-        FieldTreeWidget->setExpandsOnDoubleClick(false);
-        FieldTreeWidget->setColumnCount(4);
-        HorizontalSplitter->addWidget(FieldTreeWidget);
-        FieldTreeWidget->header()->setDefaultSectionSize(75);
+        TableTreeWidget->header()->setVisible(true);
         MainHorizontalSplitter->addWidget(HorizontalSplitter);
         VerticalSplitter = new QSplitter(MainHorizontalSplitter);
         VerticalSplitter->setObjectName(QString::fromUtf8("VerticalSplitter"));

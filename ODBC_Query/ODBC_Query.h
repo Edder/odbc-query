@@ -8,7 +8,7 @@
 #include "ODBC_CustomSyntaxHighlighter.h"
 #include "ODBC_OptionsDialog.h"
 
-#define REVISION 17
+#define REVISION 18
 #define APPLICATION_NAME "ODBC Query"
 
 class ODBC_Query : public QMainWindow
@@ -37,7 +37,7 @@ class ODBC_Query : public QMainWindow
 		void ExecuteButtonClicked();
 		void LeftButtonClicked();
 		void RightButtonClicked();
-		void TableItemSelectionChanged();
+		void TableItemExpanded(QTreeWidgetItem *item);
 		void Exit();
 		void NewConnection();
 		void CloseAllConnections(bool close = false);

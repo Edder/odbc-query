@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="odbc_query.qrc">
-    <normaloff>:/ODBC_Query/Resources/database_icon.ico</normaloff>:/ODBC_Query/Resources/database_icon.ico</iconset>
+    <normaloff>:/ODBC_Query/Resources/database_icon.png</normaloff>:/ODBC_Query/Resources/database_icon.png</iconset>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -118,60 +118,29 @@
        </property>
        <widget class="QTreeWidget" name="TableTreeWidget">
         <property name="alternatingRowColors">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="indentation">
-         <number>0</number>
+         <number>15</number>
         </property>
-        <property name="itemsExpandable">
-         <bool>false</bool>
-        </property>
-        <property name="expandsOnDoubleClick">
-         <bool>false</bool>
-        </property>
-        <column>
-         <property name="text">
-          <string notr="true">1</string>
-         </property>
-        </column>
-       </widget>
-       <widget class="QTreeWidget" name="FieldTreeWidget">
-        <property name="alternatingRowColors">
+        <property name="rootIsDecorated">
          <bool>true</bool>
         </property>
-        <property name="indentation">
-         <number>0</number>
-        </property>
         <property name="itemsExpandable">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="animated">
+         <bool>true</bool>
         </property>
         <property name="expandsOnDoubleClick">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
-        <property name="columnCount">
-         <number>4</number>
-        </property>
-        <attribute name="headerDefaultSectionSize">
-         <number>75</number>
+        <attribute name="headerVisible">
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
           <string notr="true">1</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">2</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">3</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">4</string>
          </property>
         </column>
        </widget>

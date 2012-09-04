@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/ODBC_Query">
-        <file>Resources/primary_key.png</file>
         <file>Resources/play_icon.png</file>
         <file>Resources/left_arrow.png</file>
         <file>Resources/right_arrow.png</file>
@@ -12,5 +11,9 @@
         <file>Resources/loading.gif</file>
         <file>Resources/info.png</file>
         <file>Resources/exit.png</file>
+        <file>Resources/database_icon.png</file>
+        <file>Resources/row.png</file>
+        <file>Resources/table.png</file>
+        <file>Resources/primary_key.png</file>
     </qresource>
 </RCC>

@@ -44,16 +44,11 @@ void ODBC_Query::InitGui()
 	list << 1000 << 26 << 200 << 200;
 	ui.VerticalSplitter->setSizes(list);
 	list.clear();
-	list << 500 << 1000;
+	list << 250 << 1000;
 	ui.MainHorizontalSplitter->setSizes(list);
 
 	// setup gui
 	ui.StatusBar->addPermanentWidget(ui.StatusLabel, -1);
-	ui.TableTreeWidget->setHeaderLabel("Tables");
-	ui.FieldTreeWidget->setHeaderLabels(QStringList() << "Name" << "Type" << "Length" << "Nullable");
-	ui.FieldTreeWidget->resizeColumnToContents(1);
-	ui.FieldTreeWidget->resizeColumnToContents(2);	
-	ui.FieldTreeWidget->resizeColumnToContents(3);
 	ui.ToolBar->addWidget(ui.AddConnectionToolButton);
 	ui.ToolBar->addWidget(ui.OpenConnectionsToolButton);
 	ui.OpenConnectionsToolButton->setMenu(ui.OpenConnectionsMenu);
@@ -63,6 +58,7 @@ void ODBC_Query::InitGui()
 	m_pLoadingLabel->setMovie(m_pLoadingAnimation);
 	ui.StatusBar->addPermanentWidget(m_pLoadingLabel);
 	m_pLoadingLabel->setHidden(true);
+	ui.TableTreeWidget->setHeaderLabel("Tables");
 
 	installEventFilter(this);
 
@@ -74,7 +70,7 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.ExecuteToolButton, SIGNAL(clicked()), SLOT(ExecuteButtonClicked()));
 	QObject::connect(ui.LeftToolButton, SIGNAL(clicked()), SLOT(LeftButtonClicked()));
 	QObject::connect(ui.RightToolButton, SIGNAL(clicked()), SLOT(RightButtonClicked()));
-	QObject::connect(ui.TableTreeWidget, SIGNAL(itemSelectionChanged()), SLOT(TableItemSelectionChanged()));
+	QObject::connect(ui.TableTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), SLOT(TableItemExpanded(QTreeWidgetItem*)));
 	QObject::connect(ui.ExitAction, SIGNAL(triggered()), SLOT(Exit()));
 	QObject::connect(ui.NewConnectionAction, SIGNAL(triggered()), SLOT(NewConnection()));
 	QObject::connect(ui.AddConnectionToolButton, SIGNAL(clicked()), SLOT(NewConnection()));
@@ -95,7 +91,6 @@ void ODBC_Query::InitGui()
 void ODBC_Query::ResetGui()
 {
 	ui.TableTreeWidget->clear();
-	ui.FieldTreeWidget->clear();
 	ui.SQLCommandTextEdit->clear();
 	ui.SQLLogTextBrowser->clear();
 	ui.CurrentStatementLabel->setText("1");
@@ -142,7 +137,6 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 
 	m_pCurrentConnection = connection;
 	m_pCurrentConnection->RestoreGui();
-	ui.SQLLogTextBrowser->verticalScrollBar()->setSliderPosition(ui.SQLLogTextBrowser->verticalScrollBar()->maximum());
 	
 	QAction *pAction;
 	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
@@ -220,17 +214,17 @@ void ODBC_Query::RightButtonClicked()
 		m_pCurrentConnection->HandleLeftRightButton(true);
 }
 
-void ODBC_Query::TableItemSelectionChanged()
+void ODBC_Query::TableItemExpanded(QTreeWidgetItem* item)
 {
 	if (m_pCurrentConnection != NULL)
 	{
-		QList<QTreeWidgetItem*> lItems = ui.TableTreeWidget->selectedItems();
-		if (lItems.count() == 0)
+		if (item == NULL)
 			return;
 
-		QTreeWidgetItem* pItem = lItems.value(0);
-		if (pItem != NULL)
-			m_pCurrentConnection->LoadTableColumns(pItem->text(0));
+		if (item->childCount() > 0)
+			return;
+
+		m_pCurrentConnection->LoadTableColumns(item);
 	}
 }
 

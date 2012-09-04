@@ -14,7 +14,7 @@ class ODBC_Connection : public QObject
 
 		bool ConnectToDatabase(QString database = NULL, QString user = NULL, QString password = NULL); 
 		void LoadTables();
-		void LoadTableColumns(QString tableName);
+		void LoadTableColumns(QTreeWidgetItem *item);
 		void HandleLeftRightButton(bool directionRight);
 		void HandleSQLCommandTextChanged();
 		void OpenConnection(QString connectionName);
@@ -39,7 +39,7 @@ class ODBC_Connection : public QObject
 		QString m_sCurrentStatement;
 		QStringList m_slStatementHistory;
 		int m_iCurrentHistoryIndex;
-		QString m_sLoadedTable;
+		QStringList m_lExpandedTables;
 		QString m_sLogFile;
 		QTime mTime;
 		QString m_sLogText;
