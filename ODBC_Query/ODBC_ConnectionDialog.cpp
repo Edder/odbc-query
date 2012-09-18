@@ -38,6 +38,12 @@ void ODBC_ConnectionDialog::Init()
 		ui.UserDSNTreeWidget->addTopLevelItem(new QTreeWidgetItem(QStringList() << UserDSNList.value(i) << UserDSN.value(UserDSNList.value(i)).toString()));
 }
 
+void ODBC_ConnectionDialog::Reset()
+{
+	m_bChoiceMade = false;
+	m_bClosed = false;
+}
+
 void ODBC_ConnectionDialog::ConnectButtonClicked()
 {	
 	if (m_sSelectedDatabase.isEmpty())

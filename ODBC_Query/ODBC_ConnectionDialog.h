@@ -10,6 +10,7 @@ class ODBC_ConnectionDialog : public QDialog
 
 	public:
 		void Init();
+		void Reset();
 		bool IsSystemDSN() { return m_bSystemDSNSelected; };
 		bool IsValid() { return m_bChoiceMade; };
 

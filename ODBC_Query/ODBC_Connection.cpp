@@ -167,7 +167,7 @@ void ODBC_Connection::ExecuteQuery(QString query)
 	if (!m_pQuery->exec(query))
 	{
 		QString sError = m_pQuery->lastError().text();
-		m_sLogText = QString("<table><tr><td><b>%1</b></td><td><font color='#FF0000'>%2</font></td></tr></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), sError);
+		m_sLogText = QString("<table><tr><td><b>%1</b></td><td><font color='#FF0000'>%2</font></td></tr></table>").arg(QDateTime::currentDateTime().toString("(hh:mm:ss)"), sError.replace('<', "&lt;").replace('>', "&gt;"));
 		ODBC_Logging::getInstance()->WriteLog(ERROR, sError);
 	}
 	else
@@ -241,7 +241,7 @@ void ODBC_Connection::HandleSQLCommandTextChanged()
 
 void ODBC_Connection::OpenConnection(QString connectionName)
 {
-	m_db = QSqlDatabase::addDatabase("QODBC", connectionName);
+	m_db = QSqlDatabase::addDatabase("QODBC3", connectionName);
 	m_sConnectionName = connectionName;
 }
 

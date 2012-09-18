@@ -240,6 +240,7 @@ void ODBC_Query::NewConnection()
 	ConnectionDialog.Init();
 	while (!ConnectionDialog.IsClosed())
 	{
+		ConnectionDialog.Reset();
 		ConnectionDialog.exec();
 		if (!ConnectionDialog.IsValid())
 			return;
@@ -492,7 +493,6 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 						delete pConnection;
 						pConnection = NULL;
 						ODBC_Logging::getInstance()->WriteLog(INFORMATION, QString("Connection %1 closed, it wasn't the current connection").arg(sConnectionNameToClose));
-						ResetGui();
 					}
 					else
 					{
@@ -557,7 +557,7 @@ void ODBC_Query::Executed()
 		if (pModel != NULL)
 		{
 			// and bind it to the tableview
-			ui.SQLResultTableView->setModel(m_pCurrentConnection->GetSQLResultTable());
+			ui.SQLResultTableView->setModel(pModel);
 			ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
 			ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(ui.SQLResultTableView->verticalScrollBar()->minimum());
 			ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(ui.SQLResultTableView->horizontalScrollBar()->minimum());
