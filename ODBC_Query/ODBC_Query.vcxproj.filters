@@ -86,9 +86,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ODBC_OptionsDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="ODBC_Logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="precompiled.h">
@@ -108,9 +105,6 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ODBC_OptionsDialog.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ODBC_Logging.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
