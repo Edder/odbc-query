@@ -587,7 +587,7 @@ void ODBC_Query::ShowOptions()
 
 void ODBC_Query::ShowAbout()
 {
-	QMessageBox::about(this, QString("About %1").arg(APPLICATION_NAME), QString("<b>ODBC Query (build: %1)</b><br/><br/>written by Daniel Rosenauer<br/><br/>mail: <a href='mailto:d.rosenauer@googlemail.com'>d.rosenauer@gmail.com</a><br/>github: <a href='https://github.com/Edder/odbc-query'>project page</a><br/><br/>linked against Qt %2").arg(QString().setNum(REVISION), QT_VERSION_STR));
+	QMessageBox::about(this, QString("About %1").arg(APPLICATION_NAME), QString("<b>%1 (build: %2)</b><br/><br/>written by Daniel Rosenauer<br/><br/>mail: <a href='mailto:d.rosenauer@googlemail.com'>d.rosenauer@gmail.com</a><br/>github: <a href='https://github.com/Edder/odbc-query'>project page</a><br/><br/>linked against Qt %3").arg(APPLICATION_NAME, QString().setNum(REVISION), QT_VERSION_STR));
 }
 // </SLOTS>
 

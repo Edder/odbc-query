@@ -8,7 +8,7 @@
 #include "ODBC_CustomSyntaxHighlighter.h"
 #include "ODBC_OptionsDialog.h"
 
-#define REVISION 21
+#define REVISION 22
 #define APPLICATION_NAME "ODBC Query"
 
 class ODBC_Query : public QMainWindow
