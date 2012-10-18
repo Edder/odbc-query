@@ -1,6 +1,5 @@
 #include "precompiled.h"
 #include "odbc_query.h"
-#include <QtGui/QApplication>
 
 int main(int argc, char *argv[])
 {

@@ -1,8 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ODBC_OptionsDialog.ui'
 **
-** Created: Wed 19. Sep 18:52:42 2012
-**      by: Qt User Interface Compiler version 4.8.2
+** Created by: Qt User Interface Compiler version 5.0.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -11,21 +10,21 @@
 #define UI_ODBC_OPTIONSDIALOG_H
 
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
-#include <QtGui/QDialog>
-#include <QtGui/QFormLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QSpinBox>
-#include <QtGui/QTabWidget>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -45,8 +44,8 @@ public:
     QFormLayout *formLayout_2;
     QVBoxLayout *VerticalLayout_2;
     QHBoxLayout *HorizontalLayout_2;
-    QCheckBox *FetchResultsCheckBox;
-    QSpacerItem *FetchResultsSpacer;
+    QCheckBox *ForwardOnlyCheckBox;
+    QSpacerItem *ForwardOnlySpacer;
     QHBoxLayout *MainHorizontalLayout;
     QPushButton *OKButton;
     QPushButton *CancelButton;
@@ -55,30 +54,30 @@ public:
     void setupUi(QDialog *OptionsDialog)
     {
         if (OptionsDialog->objectName().isEmpty())
-            OptionsDialog->setObjectName(QString::fromUtf8("OptionsDialog"));
+            OptionsDialog->setObjectName(QStringLiteral("OptionsDialog"));
         OptionsDialog->resize(400, 299);
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/ODBC_Query/Resources/options.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QStringLiteral(":/ODBC_Query/Resources/options.png"), QSize(), QIcon::Normal, QIcon::Off);
         OptionsDialog->setWindowIcon(icon);
         verticalLayout = new QVBoxLayout(OptionsDialog);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(5, 5, 5, 5);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         OptionsTabWidget = new QTabWidget(OptionsDialog);
-        OptionsTabWidget->setObjectName(QString::fromUtf8("OptionsTabWidget"));
+        OptionsTabWidget->setObjectName(QStringLiteral("OptionsTabWidget"));
         ConnectionTab = new QWidget();
-        ConnectionTab->setObjectName(QString::fromUtf8("ConnectionTab"));
+        ConnectionTab->setObjectName(QStringLiteral("ConnectionTab"));
         formLayout = new QFormLayout(ConnectionTab);
-        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setObjectName(QStringLiteral("formLayout"));
         formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
         formLayout->setContentsMargins(5, 5, 9, -1);
         VerticalLayout = new QVBoxLayout();
         VerticalLayout->setSpacing(6);
-        VerticalLayout->setObjectName(QString::fromUtf8("VerticalLayout"));
+        VerticalLayout->setObjectName(QStringLiteral("VerticalLayout"));
         HorizontalLayout = new QHBoxLayout();
         HorizontalLayout->setSpacing(6);
-        HorizontalLayout->setObjectName(QString::fromUtf8("HorizontalLayout"));
+        HorizontalLayout->setObjectName(QStringLiteral("HorizontalLayout"));
         TimeoutLabel = new QLabel(ConnectionTab);
-        TimeoutLabel->setObjectName(QString::fromUtf8("TimeoutLabel"));
+        TimeoutLabel->setObjectName(QStringLiteral("TimeoutLabel"));
         QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -89,7 +88,7 @@ public:
         HorizontalLayout->addWidget(TimeoutLabel);
 
         TimeoutSpinBox = new QSpinBox(ConnectionTab);
-        TimeoutSpinBox->setObjectName(QString::fromUtf8("TimeoutSpinBox"));
+        TimeoutSpinBox->setObjectName(QStringLiteral("TimeoutSpinBox"));
         TimeoutSpinBox->setMaximum(300);
 
         HorizontalLayout->addWidget(TimeoutSpinBox);
@@ -106,23 +105,23 @@ public:
 
         OptionsTabWidget->addTab(ConnectionTab, QString());
         StatementsTab = new QWidget();
-        StatementsTab->setObjectName(QString::fromUtf8("StatementsTab"));
+        StatementsTab->setObjectName(QStringLiteral("StatementsTab"));
         formLayout_2 = new QFormLayout(StatementsTab);
-        formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
         formLayout_2->setContentsMargins(5, 11, -1, -1);
         VerticalLayout_2 = new QVBoxLayout();
-        VerticalLayout_2->setObjectName(QString::fromUtf8("VerticalLayout_2"));
+        VerticalLayout_2->setObjectName(QStringLiteral("VerticalLayout_2"));
         HorizontalLayout_2 = new QHBoxLayout();
         HorizontalLayout_2->setSpacing(6);
-        HorizontalLayout_2->setObjectName(QString::fromUtf8("HorizontalLayout_2"));
-        FetchResultsCheckBox = new QCheckBox(StatementsTab);
-        FetchResultsCheckBox->setObjectName(QString::fromUtf8("FetchResultsCheckBox"));
+        HorizontalLayout_2->setObjectName(QStringLiteral("HorizontalLayout_2"));
+        ForwardOnlyCheckBox = new QCheckBox(StatementsTab);
+        ForwardOnlyCheckBox->setObjectName(QStringLiteral("ForwardOnlyCheckBox"));
 
-        HorizontalLayout_2->addWidget(FetchResultsCheckBox);
+        HorizontalLayout_2->addWidget(ForwardOnlyCheckBox);
 
-        FetchResultsSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        ForwardOnlySpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        HorizontalLayout_2->addItem(FetchResultsSpacer);
+        HorizontalLayout_2->addItem(ForwardOnlySpacer);
 
 
         VerticalLayout_2->addLayout(HorizontalLayout_2);
@@ -135,19 +134,19 @@ public:
         verticalLayout->addWidget(OptionsTabWidget);
 
         MainHorizontalLayout = new QHBoxLayout();
-        MainHorizontalLayout->setObjectName(QString::fromUtf8("MainHorizontalLayout"));
+        MainHorizontalLayout->setObjectName(QStringLiteral("MainHorizontalLayout"));
         OKButton = new QPushButton(OptionsDialog);
-        OKButton->setObjectName(QString::fromUtf8("OKButton"));
+        OKButton->setObjectName(QStringLiteral("OKButton"));
 
         MainHorizontalLayout->addWidget(OKButton);
 
         CancelButton = new QPushButton(OptionsDialog);
-        CancelButton->setObjectName(QString::fromUtf8("CancelButton"));
+        CancelButton->setObjectName(QStringLiteral("CancelButton"));
 
         MainHorizontalLayout->addWidget(CancelButton);
 
         ApplyButton = new QPushButton(OptionsDialog);
-        ApplyButton->setObjectName(QString::fromUtf8("ApplyButton"));
+        ApplyButton->setObjectName(QStringLiteral("ApplyButton"));
 
         MainHorizontalLayout->addWidget(ApplyButton);
 
@@ -165,29 +164,29 @@ public:
 
     void retranslateUi(QDialog *OptionsDialog)
     {
-        OptionsDialog->setWindowTitle(QApplication::translate("OptionsDialog", "Options", 0, QApplication::UnicodeUTF8));
+        OptionsDialog->setWindowTitle(QApplication::translate("OptionsDialog", "Options", 0));
 #ifndef QT_NO_TOOLTIP
-        TimeoutLabel->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
+        TimeoutLabel->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
         TimeoutLabel->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
-        TimeoutLabel->setText(QApplication::translate("OptionsDialog", "Timeout:", 0, QApplication::UnicodeUTF8));
+        TimeoutLabel->setText(QApplication::translate("OptionsDialog", "Timeout:", 0));
 #ifndef QT_NO_TOOLTIP
-        TimeoutSpinBox->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0, QApplication::UnicodeUTF8));
+        TimeoutSpinBox->setToolTip(QApplication::translate("OptionsDialog", "Sets the connection timeout in seconds", 0));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
         TimeoutSpinBox->setStatusTip(QString());
 #endif // QT_NO_STATUSTIP
-        OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(ConnectionTab), QApplication::translate("OptionsDialog", "Connection", 0, QApplication::UnicodeUTF8));
+        OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(ConnectionTab), QApplication::translate("OptionsDialog", "Connection", 0));
 #ifndef QT_NO_TOOLTIP
-        FetchResultsCheckBox->setToolTip(QApplication::translate("OptionsDialog", "Determines whether select statements results should be fetched dynamically", 0, QApplication::UnicodeUTF8));
+        ForwardOnlyCheckBox->setToolTip(QApplication::translate("OptionsDialog", "Forward only mode can be (depending on the driver) more memory efficient since results do not need to be cached. It will also improve performance on some databases.", 0));
 #endif // QT_NO_TOOLTIP
-        FetchResultsCheckBox->setText(QApplication::translate("OptionsDialog", "Fetch results dynamically", 0, QApplication::UnicodeUTF8));
-        OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(StatementsTab), QApplication::translate("OptionsDialog", "Statements", 0, QApplication::UnicodeUTF8));
-        OKButton->setText(QApplication::translate("OptionsDialog", "OK", 0, QApplication::UnicodeUTF8));
-        CancelButton->setText(QApplication::translate("OptionsDialog", "Cancel", 0, QApplication::UnicodeUTF8));
-        ApplyButton->setText(QApplication::translate("OptionsDialog", "Apply", 0, QApplication::UnicodeUTF8));
+        ForwardOnlyCheckBox->setText(QApplication::translate("OptionsDialog", "Use Forward Only", 0));
+        OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(StatementsTab), QApplication::translate("OptionsDialog", "Statements", 0));
+        OKButton->setText(QApplication::translate("OptionsDialog", "OK", 0));
+        CancelButton->setText(QApplication::translate("OptionsDialog", "Cancel", 0));
+        ApplyButton->setText(QApplication::translate("OptionsDialog", "Apply", 0));
     } // retranslateUi
 
 };

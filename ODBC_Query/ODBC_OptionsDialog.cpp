@@ -36,17 +36,17 @@ void ODBC_OptionsDialog::Init()
 	}
 	Settings.endGroup();
 	Settings.beginGroup("statements");
-	if (Settings.contains("fetchdynamically")) // get the value
-		m_bFetchDynamically = Settings.value("fetchdynamically").toBool();
+	if (Settings.contains("forwardonly")) // get the value
+		m_bForwardOnly = Settings.value("forwardonly").toBool();
 	else // set the default value
 	{
-		Settings.setValue("fetchdynamically", true);
-		m_bFetchDynamically = true;
+		Settings.setValue("forwardonly", true);
+		m_bForwardOnly = true;
 	}
 	Settings.endGroup();
 
 	ui.TimeoutSpinBox->setValue(m_iConnectionTimeout);
-	ui.FetchResultsCheckBox->setChecked(m_bFetchDynamically);
+	ui.ForwardOnlyCheckBox->setChecked(m_bForwardOnly);
 
 	QObject::connect(ui.OKButton, SIGNAL(clicked()), SLOT(OKButtonClicked()));
 	QObject::connect(ui.CancelButton, SIGNAL(clicked()), SLOT(CancelButtonClicked()));
@@ -62,13 +62,13 @@ void ODBC_OptionsDialog::OKButtonClicked()
 void ODBC_OptionsDialog::ApplyButtonClicked()
 {
 	m_iConnectionTimeout = ui.TimeoutSpinBox->value();
-	m_bFetchDynamically = ui.FetchResultsCheckBox->isChecked();
+	m_bForwardOnly = ui.ForwardOnlyCheckBox->isChecked();
 	QSettings Settings("settings.ini", QSettings::IniFormat, this);
 	Settings.beginGroup("connection");
 	Settings.setValue("timeout", m_iConnectionTimeout);
 	Settings.endGroup();
 	Settings.beginGroup("statements");
-	Settings.setValue("fetchdynamically", m_bFetchDynamically);
+	Settings.setValue("forwardonly", m_bForwardOnly);
 	Settings.endGroup();
 }
 

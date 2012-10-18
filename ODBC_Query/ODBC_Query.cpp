@@ -1,18 +1,15 @@
 #include "precompiled.h"
 #include "ODBC_Query.h"
-#include "ODBC_Connection.h"
-#include "ODBC_ConnectionDialog.h"
-#include "ODBC_OptionsDialog.h"
 
-ODBC_Query::ODBC_Query(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, flags)
+ODBC_Query::ODBC_Query(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
 
 	QCoreApplication::setApplicationName(APPLICATION_NAME);
 
 	// initialize the logging
-	QLogging::getInstance()->Init();
-	QLogging::getInstance()->WriteLog(INFORMATION, QString("Starting %1 (PID: %2)...").arg(QCoreApplication::applicationName(), QString().setNum(QCoreApplication::applicationPid())));
+	QMyLogging::getInstance()->Init();
+	QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Starting %1 (PID: %2)...").arg(QCoreApplication::applicationName(), QString().setNum(QCoreApplication::applicationPid())));
 	
 	InitGui();
 
@@ -23,24 +20,26 @@ ODBC_Query::~ODBC_Query()
 {
 	ODBC_OptionsDialog::getInstance()->ExitInstance();
 
-	QLogging::getInstance()->WriteLog(INFORMATION, QString("Closing %1...").arg(QCoreApplication::applicationName()));
+	QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Closing %1...").arg(QCoreApplication::applicationName()));
+
+	CleanResultWindows();
 
 	CloseAllConnections(true);
 
 	m_pCurrentConnection = NULL;
 
-	QLogging::getInstance()->WriteLog(INFORMATION, QString("Shutting down %1").arg(QCoreApplication::applicationName()));
-	QLogging::getInstance()->Close();
-	QLogging::getInstance()->ExitInstance();
+	QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Shutting down %1").arg(QCoreApplication::applicationName()));
+	QMyLogging::getInstance()->Close();
+	QMyLogging::getInstance()->ExitInstance();
 }
 
 void ODBC_Query::InitGui()
 {
-	QLogging::getInstance()->WriteLog(INFORMATION, "Initializing gui...");
+	QMyLogging::getInstance()->WriteLog(INFORMATION, "Initializing gui...");
 
 	// set the default sizes of the splitter
 	QList<int> list;
-	list << 1000 << 26 << 200 << 200;
+	list << 10 << 1000 << 26 << 200 << 200;
 	ui.VerticalSplitter->setSizes(list);
 	list.clear();
 	list << 250 << 1000;
@@ -84,7 +83,7 @@ void ODBC_Query::InitGui()
 	// initialize options menu
 	ODBC_OptionsDialog::getInstance()->Init();
 
-	QLogging::getInstance()->WriteLog(INFORMATION, "Gui initialized");
+	QMyLogging::getInstance()->WriteLog(INFORMATION, "Gui initialized");
 }
 
 void ODBC_Query::ResetGui()
@@ -105,7 +104,7 @@ void ODBC_Query::ResetGui()
 	}
 	DisableQueryToolbar();
 
-	QLogging::getInstance()->WriteLog(INFORMATION, "Gui resetted");
+	QMyLogging::getInstance()->WriteLog(INFORMATION, "Gui resetted");
 }
 
 void ODBC_Query::DisableQueryToolbar()
@@ -127,15 +126,21 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 {
 	if (connection == NULL)
 	{
-		QLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at SwitchToConnection() in connection");
+		QMyLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at SwitchToConnection() in connection");
 		#ifdef _DEBUG
 		qDebug() << "Null pointer at SwitchToConnection() in connection";
 		#endif
 		return false;
 	}
 
+	QObject::disconnect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
+	QObject::disconnect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
+
 	m_pCurrentConnection = connection;
 	m_pCurrentConnection->RestoreGui();
+
+	QObject::connect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
+	QObject::connect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
 	
 	QAction *pAction;
 	QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
@@ -151,13 +156,34 @@ bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConn
 		}
 		else
 		{
-			QLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at SwitchToConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+			QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at SwitchToConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 			#ifdef _DEBUG
 			qDebug() << QString("Null pointer at SwitchToConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 			#endif
 		}
 	}
 	return true;
+}
+
+void ODBC_Query::CleanResultWindows()
+{
+	for (int i = 0; i < m_lResultWindows.count(); i++)
+	{
+		ODBC_ResultWindow* pResultWindow = NULL;
+		pResultWindow = m_lResultWindows.at(i);
+			
+		if (pResultWindow != NULL)
+		{
+			if (!pResultWindow->isVisible())
+			{
+				delete pResultWindow;
+				pResultWindow = NULL;
+
+				m_lResultWindows.removeAt(i);
+				i--;
+			}
+		}
+	}
 }
 
 // <SLOTS>
@@ -172,20 +198,20 @@ void ODBC_Query::ExecuteButtonClicked()
 		if (!m_pCurrentConnection->IsConnectionOpen())
 		{
 			QString sConnectionName = m_pCurrentConnection->GetConnectionName();
-			QLogging::getInstance()->WriteLog(ERROR, QString("Couldn't execute statement \"%1\" of connection \"%2\", connection isn't open").arg(sQuery, sConnectionName));
+			QMyLogging::getInstance()->WriteLog(ERR, QString("Couldn't execute statement \"%1\" of connection \"%2\", connection isn't open").arg(sQuery, sConnectionName));
 			#ifdef _DEBUG
 			qDebug() << QString("Couldn't execute statement \"%1\" of connection \"%2\", connection isn't open").arg(sQuery, sConnectionName);
 			#endif
 			return;
 		}
-		QStringList lQueries = sQuery.split(';');
-		// send the signal to the execute thread
-		for (int i = 0, count = lQueries.count(); i < count; i++)
-		{
-			QString sNewQuery = lQueries.value(i);
-			if (!sNewQuery.isEmpty())
-				emit ExecuteQuery(sNewQuery);
-		}
+		//QStringList lQueries = sQuery.split(';');
+		//// send the signal to the execute thread
+		//for (int i = 0, count = lQueries.count(); i < count; i++)
+		//{
+		//	QString sNewQuery = lQueries.value(i);
+			if (!sQuery.isEmpty())
+				emit ExecuteQuery(sQuery);
+		//}
 
 		// disable execute button and start the loading animation
 		ui.ExecuteToolButton->setDisabled(true);
@@ -194,7 +220,7 @@ void ODBC_Query::ExecuteButtonClicked()
 	}
 	else
 	{
-		QLogging::getInstance()->WriteLog(WARNING, "Null pointer at ExecuteButtonClicked() in m_pCurrentConnection");
+		QMyLogging::getInstance()->WriteLog(WARNING, "Null pointer at ExecuteButtonClicked() in m_pCurrentConnection");
 		#ifdef _DEBUG
 		qDebug() << "Null pointer at ExecuteButtonClicked() in m_pCurrentConnection";
 		#endif
@@ -234,7 +260,7 @@ void ODBC_Query::Exit()
 
 void ODBC_Query::NewConnection()
 {
-	QLogging::getInstance()->WriteLog(INFORMATION, "Opening new connection...");
+	QMyLogging::getInstance()->WriteLog(INFORMATION, "Opening new connection...");
 	ODBC_ConnectionDialog ConnectionDialog;
 	ConnectionDialog.Init();
 	while (!ConnectionDialog.IsClosed())
@@ -267,11 +293,15 @@ void ODBC_Query::NewConnection()
 			}
 		}
 
-		QLogging::getInstance()->WriteLog(INFORMATION, QString("Connecting to \"%1\"").arg(sNewConnectionName));
+		QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Connecting to \"%1\"").arg(sNewConnectionName));
 
 		// close the current connection (if there is one)
 		if (m_pCurrentConnection != NULL)
+		{
 			m_pCurrentConnection->SaveGui();
+			QObject::disconnect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
+			QObject::disconnect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
+		}
 		m_pCurrentConnection = NULL;
 		QThread *pThread = new QThread(this);
 		// make a new connection
@@ -286,7 +316,10 @@ void ODBC_Query::NewConnection()
 		if (m_pCurrentConnection->ConnectToDatabase(sDatabase, ConnectionDialog.GetUsername(), ConnectionDialog.GetPassword()))
 		{
 			m_lConnections.append(m_pCurrentConnection);
-			QObject::connect(m_pCurrentConnection, SIGNAL(finished()), SLOT(Executed()));
+			
+			// dont know why I added this
+			//QObject::connect(m_pCurrentConnection, SIGNAL(finished()), SLOT(Executed()));
+
 			// add a new action with the connectionName
 			QAction *pAction = new QAction(sNewConnectionName, this);
 			pAction->setCheckable(true);
@@ -310,7 +343,7 @@ void ODBC_Query::NewConnection()
 				}
 				else
 				{
-					QLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at NewConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+					QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at NewConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 					#ifdef _DEBUG
 					qDebug() << QString("Null pointer at NewConnection() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 					#endif
@@ -363,15 +396,15 @@ void ODBC_Query::CloseAllConnections(bool close)
 		if (pConnection != NULL)
 		{
 			QString sConnectionName = pConnection->GetConnectionName();
-			QLogging::getInstance()->WriteLog(INFORMATION, QString("Attempting to close \"%1\"...").arg(sConnectionName));
+			QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Attempting to close \"%1\"...").arg(sConnectionName));
 			pConnection->CloseConnection();
 			delete pConnection;
 			pConnection = NULL;
-			QLogging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed").arg(sConnectionName));
+			QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed").arg(sConnectionName));
 		}
 		else
 		{
-			QLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+			QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 			#ifdef _DEBUG
 			qDebug() << QString("Null pointer at CloseAllConnections() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 			#endif
@@ -382,7 +415,7 @@ void ODBC_Query::CloseAllConnections(bool close)
 	
 	ResetGui();
 
-	QLogging::getInstance()->WriteLog(INFORMATION, "Closed all connections");
+	QMyLogging::getInstance()->WriteLog(INFORMATION, "Closed all connections");
 }
 
 void ODBC_Query::ConnectionsClicked(QAction *action)
@@ -398,9 +431,9 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 		{
 			QString sNewConnectionName = pMenu->title();
 			if (m_pCurrentConnection != NULL)
-				QLogging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\" (current connection: \"%2\")...").arg(sNewConnectionName, m_pCurrentConnection->GetConnectionName()));
+				QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\" (current connection: \"%2\")...").arg(sNewConnectionName, m_pCurrentConnection->GetConnectionName()));
 			else
-				QLogging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\"...").arg(sNewConnectionName));
+				QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Switching to connection \"%1\"...").arg(sNewConnectionName));
 			for (int i = 0, count = m_lConnections.count(); i < count; i++)
 			{
 				ODBC_Connection *pConnection = m_lConnections.value(i);
@@ -423,14 +456,14 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 						if (!SwitchToConnection(pConnection, sNewConnectionName))
 							return;
 					if (m_pCurrentConnection != NULL)
-						QLogging::getInstance()->WriteLog(INFORMATION, QString("Switched connection, current connection \"%1\"").arg(m_pCurrentConnection->GetConnectionName()));
+						QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Switched connection, current connection \"%1\"").arg(m_pCurrentConnection->GetConnectionName()));
 				}
 			}
 		}
 		else if (command == "Disconnect")
 		{
 			QString sConnectionNameToClose = pMenu->title();
-			QLogging::getInstance()->WriteLog(INFORMATION, QString("Attempting to close \"%1\"...").arg(sConnectionNameToClose));
+			QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Attempting to close \"%1\"...").arg(sConnectionNameToClose));
 			QAction *pAction;
 			QList<QAction*> lActions = ui.OpenConnectionsMenu->actions();
 			for (int i = 0, count = lActions.count(); i < count; i++)
@@ -443,7 +476,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 				}
 				else
 				{
-					QLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+					QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 					#ifdef _DEBUG
 					qDebug() << QString("Null pointer at ConnectionsClicked() in lActions at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 					#endif
@@ -461,14 +494,14 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 					m_pCurrentConnection->CloseConnection();
 					delete m_pCurrentConnection;
 					m_pCurrentConnection = NULL;
-					QLogging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed, it was the current connection").arg(sConnectionNameToClose));
+					QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Connection \"%1\" closed, it was the current connection").arg(sConnectionNameToClose));
 					ResetGui();
 					bCurrentConnection = true;
 				}
 			}
 			else
 			{
-				QLogging::getInstance()->WriteLog(WARNING, "Null pointer at ConnectionsClicked() in m_pCurrentConnection");
+				QMyLogging::getInstance()->WriteLog(WARNING, "Null pointer at ConnectionsClicked() in m_pCurrentConnection");
 				#ifdef _DEBUG
 				qDebug() << "Null pointer at ConnectionsClicked() in m_pCurrentConnection";
 				#endif
@@ -491,11 +524,11 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 						pConnection->CloseConnection();
 						delete pConnection;
 						pConnection = NULL;
-						QLogging::getInstance()->WriteLog(INFORMATION, QString("Connection %1 closed, it wasn't the current connection").arg(sConnectionNameToClose));
+						QMyLogging::getInstance()->WriteLog(INFORMATION, QString("Connection %1 closed, it wasn't the current connection").arg(sConnectionNameToClose));
 					}
 					else
 					{
-						QLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
+						QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count)));
 						#ifdef _DEBUG
 						qDebug() << QString("Null pointer at ConnectionsClicked() in m_lConnections at i = %1, count = %2").arg(QString().setNum(i), QString().setNum(count));
 						#endif
@@ -509,7 +542,7 @@ void ODBC_Query::ConnectionsClicked(QAction *action)
 	}
 	else
 	{
-		QLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at ConnectionsClicked() in pMenu");
+		QMyLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at ConnectionsClicked() in pMenu");
 		#ifdef _DEBUG
 		qDebug() << "Null pointer at ConnectionsClicked() in pMenu";
 		#endif
@@ -551,15 +584,34 @@ void ODBC_Query::Executed()
 {
 	if (m_pCurrentConnection != NULL)
 	{	
-		// get the model
-		QAbstractItemModel *pModel = m_pCurrentConnection->GetSQLResultTable();
-		if (pModel != NULL)
+		int iResultTableCount = m_pCurrentConnection->GetResultTableCount();
+		if (iResultTableCount > 0)
 		{
-			// and bind it to the tableview
-			ui.SQLResultTableView->setModel(pModel);
-			ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
-			ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(ui.SQLResultTableView->verticalScrollBar()->minimum());
-			ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(ui.SQLResultTableView->horizontalScrollBar()->minimum());
+			// get the model
+			QStandardItemModel *pModel = m_pCurrentConnection->GetSQLResultTable(0);
+			if (pModel != NULL)
+			{
+				ui.ResultCountLabel->setText(QString("Rows: %1").arg(pModel->rowCount()));
+
+				// and bind it to the tableview
+				ui.SQLResultTableView->setModel(pModel);
+				ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
+				ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(ui.SQLResultTableView->verticalScrollBar()->minimum());
+				ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(ui.SQLResultTableView->horizontalScrollBar()->minimum());
+
+				CleanResultWindows();
+
+				if (iResultTableCount > 1)
+				{
+					for (int i = 1; i < iResultTableCount; i++)
+					{
+						ODBC_ResultWindow* pResultWindow = new ODBC_ResultWindow();
+						m_lResultWindows.append(pResultWindow);
+						pResultWindow->Init(i, m_pCurrentConnection->GetSQLResultTable(i));
+						pResultWindow->show();
+					}
+				}
+			}
 		}
 
 		// update log text and the query toolbar

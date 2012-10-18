@@ -21,31 +21,32 @@ class ODBC_Connection : public QObject
 		void RestoreGui();
 		void SaveGui();
 		void CloseConnection();
-		bool IsConnectionOpen() { return m_db.isOpen(); };
 
 		// Getter / Setter
 		QString GetConnectionName() { return m_sConnectionName; };
 		QString GetLogText() { return m_sLogText; };
 		QString GetDatabaseError() { return m_sDatabaseError; };
 		int GetCurrentHistoryIndex() { return m_iCurrentHistoryIndex; };
-		QAbstractItemModel* GetSQLResultTable() { return m_pSQLResultTable; };
+		int GetResultTableCount() { return m_iResultTableCount; };
+		QStandardItemModel* GetSQLResultTable(int index) { return m_lSQLResultTables[index]; };
+		bool IsConnectionOpen() { return m_db.isOpen(); };
 
 	private:
 		QString m_sConnectionName;
 		Ui::ODBC_QueryClass m_ui;
 		QSqlDatabase m_db;
-		QSqlQuery* m_pQuery;
-		QSqlQueryModel* m_pSqlQueryModel;
+		QSqlQuery mQuery;
 		QString m_sCurrentStatement;
 		QStringList m_slStatementHistory;
 		int m_iCurrentHistoryIndex;
+		int m_iResultTableCount;
 		QStringList m_lExpandedTables;
 		QString m_sLogFile;
 		QTime mTime;
 		QString m_sLogText;
 		QString m_sDatabaseError;
 		QThread* m_pOwnThread;
-		QAbstractItemModel* m_pSQLResultTable;
+		QList<QStandardItemModel*> m_lSQLResultTables;
 
 	public slots:
 		void ExecuteQuery(QString query);

@@ -152,6 +152,14 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
+       <widget class="QLabel" name="ResultCountLabel">
+        <property name="text">
+         <string>Rows: </string>
+        </property>
+        <property name="margin">
+         <number>3</number>
+        </property>
+       </widget>
        <widget class="ODBC_TableView" name="SQLResultTableView">
         <property name="font">
          <font>
@@ -175,7 +183,7 @@
          <bool>true</bool>
         </property>
         <property name="sortingEnabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <attribute name="verticalHeaderDefaultSectionSize">
          <number>20</number>
@@ -360,13 +368,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <layout class="QHBoxLayout" name="HorizontalLayout">
-         <item>
-          <widget class="QTextEdit" name="SQLCommandTextEdit"/>
-         </item>
-        </layout>
-       </widget>
+       <widget class="QTextEdit" name="SQLCommandTextEdit"/>
        <widget class="QTextBrowser" name="SQLLogTextBrowser">
         <property name="readOnly">
          <bool>true</bool>

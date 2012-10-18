@@ -1,3 +1,6 @@
+#ifndef ODBC_TABLEVIEW_H
+#define ODBC_TABLEVIEW_H
+
 #include "precompiled.h"
 
 class ODBC_TableView : public QTableView
@@ -57,4 +60,6 @@ class ODBC_TableView : public QTableView
 				QTableView::keyPressEvent(event);
 		};
 };
+
+#endif // ODBC_TABLEVIEW_H
 

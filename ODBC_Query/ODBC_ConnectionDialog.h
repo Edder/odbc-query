@@ -1,7 +1,7 @@
 #ifndef ODBC_CONNECTIONDIALOG_H
 #define ODBC_CONNECTIONDIALOG_H
 
-#include <QtGui/QMainWindow>
+#include "precompiled.h"
 #include "ui_ODBC_ConnectionDialog.h"
 
 class ODBC_ConnectionDialog : public QDialog

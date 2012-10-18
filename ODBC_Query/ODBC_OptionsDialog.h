@@ -1,7 +1,7 @@
 #ifndef ODBC_OPTIONSDIALOG_H
 #define ODBC_OPTIONSDIALOG_H
 
-#include <QtGui/QMainWindow>
+#include "precompiled.h"
 #include "ui_ODBC_OptionsDialog.h"
 
 class ODBC_OptionsDialog : public QDialog
@@ -16,7 +16,7 @@ class ODBC_OptionsDialog : public QDialog
 		
 		// Getter / Setter
 		int GetConnectionTimeout() { return m_iConnectionTimeout; };
-		bool FetchResultsDynamically() {return m_bFetchDynamically; };
+		bool ForwardOnly() {return m_bForwardOnly; };
 
 	private:
 		ODBC_OptionsDialog();
@@ -27,7 +27,7 @@ class ODBC_OptionsDialog : public QDialog
 		bool m_bInitialized;
 		Ui::OptionsDialog ui;
 		int m_iConnectionTimeout;
-		bool m_bFetchDynamically;
+		bool m_bForwardOnly;
 
 	private slots:
 		void OKButtonClicked();

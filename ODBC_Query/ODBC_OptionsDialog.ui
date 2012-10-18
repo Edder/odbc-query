@@ -18,7 +18,16 @@
     <normaloff>:/ODBC_Query/Resources/options.png</normaloff>:/ODBC_Query/Resources/options.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -126,17 +135,17 @@
             <number>6</number>
            </property>
            <item>
-            <widget class="QCheckBox" name="FetchResultsCheckBox">
+            <widget class="QCheckBox" name="ForwardOnlyCheckBox">
              <property name="toolTip">
-              <string>Determines whether select statements results should be fetched dynamically</string>
+              <string>Forward only mode can be (depending on the driver) more memory efficient since results do not need to be cached. It will also improve performance on some databases.</string>
              </property>
              <property name="text">
-              <string>Fetch results dynamically</string>
+              <string>Use Forward Only</string>
              </property>
             </widget>
            </item>
            <item>
-            <spacer name="FetchResultsSpacer">
+            <spacer name="ForwardOnlySpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>

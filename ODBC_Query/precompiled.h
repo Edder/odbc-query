@@ -1,3 +1,9 @@
+#include <QtWidgets\QTableView>
+#include <QtWidgets\QApplication>
+#include <QtWidgets\QScrollBar>
+#include <QtWidgets\QMessageBox>
+#include <QtGui\QClipboard>
 #include <QtGui>
+#include <QtCore>
 #include <QtSql>
-#include <QLogging.h>
+#include <QMyLogging.h>
