@@ -118,26 +118,28 @@ void ODBC_Connection::LoadTableColumns(QTreeWidgetItem *item)
 			{
 				if (!bTableWarningShown)
 				{	
-					QLogging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName));
+					QLogging::getInstance()->WriteLog(WARNING, QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist, starting fallback to manual type detection").arg(sTableName, m_sConnectionName));
 					#ifdef _DEBUG
-					qDebug() << QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist").arg(sTableName, m_sConnectionName);
+					qDebug() << QString("Couldn't retrieve fieldinfo for table \"%1\" of connection \"%2\", database INFORMATION_SCHEMA.COLUMNS doesn't exist, starting fallback to manual type detection").arg(sTableName, m_sConnectionName);
 					#endif
 					bTableWarningShown = true;
 				}
+				sTypeName = QVariant::typeToName(field.type());
+				sLength = QString().setNum(field.length());
+				sNullable = (field.requiredStatus() == 1 ? "YES" : "NO");
 			}
 			bool isPrimaryKey = index.contains(sName) ? true : false;
 			QTreeWidgetItem *pItem = new QTreeWidgetItem();
 			if (isPrimaryKey)
 			{
-				pItem->setText(0, QString("%1 (PS, %2(%3), %4)").arg(sName, sTypeName, sLength, (sNullable == "YES" ? "NOT NULL" : "NULL")));
+				pItem->setText(0, QString("%1 (PS, %2(%3), %4)").arg(sName, sTypeName, sLength, (sNullable == "YES" ? "NULL" : "NOT NULL")));
 				pItem->setIcon(0, QIcon(":/ODBC_Query/Resources/primary_key.png"));
 			}
 			else
 			{
-				pItem->setText(0, QString("%1 (%2(%3), %4)").arg(sName, sTypeName, sLength, (sNullable == "YES" ? "NOT NULL" : "NULL")));
+				pItem->setText(0, QString("%1 (%2(%3), %4)").arg(sName, sTypeName, sLength, (sNullable == "YES" ? "NULL" : "NOT NULL")));
 				pItem->setIcon(0, QIcon(":/ODBC_Query/Resources/row.png"));
 			}
-
 			item->addChild(pItem);
 		}
 		m_ui.TableTreeWidget->expandItem(item);
