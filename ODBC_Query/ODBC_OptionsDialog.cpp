@@ -43,10 +43,26 @@ void ODBC_OptionsDialog::Init()
 		Settings.setValue("forwardonly", true);
 		m_bForwardOnly = true;
 	}
+	if (Settings.contains("limitresults")) // get the value
+		m_bLimitResults = Settings.value("limitresults").toBool();
+	else // set the default value
+	{
+		Settings.setValue("limitresults", true);
+		m_bLimitResults = true;
+	}
+	Settings.endGroup();
+	if (Settings.contains("resultcount")) // get the value
+		m_iResultCount = Settings.value("resultcount").toInt();
+	else // set the default value
+	{
+		Settings.setValue("resultcount", 2000);
+		m_iResultCount = 2000;
+	}
 	Settings.endGroup();
 
 	ui.TimeoutSpinBox->setValue(m_iConnectionTimeout);
 	ui.ForwardOnlyCheckBox->setChecked(m_bForwardOnly);
+	ui.LimitResultsCheckBox->setChecked(m_bLimitResults);
 
 	QObject::connect(ui.OKButton, SIGNAL(clicked()), SLOT(OKButtonClicked()));
 	QObject::connect(ui.CancelButton, SIGNAL(clicked()), SLOT(CancelButtonClicked()));

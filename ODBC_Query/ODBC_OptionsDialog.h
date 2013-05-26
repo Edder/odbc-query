@@ -28,6 +28,8 @@ class ODBC_OptionsDialog : public QDialog
 		Ui::OptionsDialog ui;
 		int m_iConnectionTimeout;
 		bool m_bForwardOnly;
+		bool m_bLimitResults;
+		int m_iResultCount;
 
 	private slots:
 		void OKButtonClicked();

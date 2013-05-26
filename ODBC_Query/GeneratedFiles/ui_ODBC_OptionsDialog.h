@@ -42,10 +42,12 @@ public:
     QSpacerItem *TimeoutSpacer;
     QWidget *StatementsTab;
     QFormLayout *formLayout_2;
-    QVBoxLayout *VerticalLayout_2;
-    QHBoxLayout *HorizontalLayout_2;
+    QHBoxLayout *horizontalLayout_2;
     QCheckBox *ForwardOnlyCheckBox;
-    QSpacerItem *ForwardOnlySpacer;
+    QHBoxLayout *horizontalLayout;
+    QCheckBox *LimitResultsCheckBox;
+    QSpinBox *ResultCountSpinBox;
+    QSpacerItem *horizontalSpacer;
     QHBoxLayout *MainHorizontalLayout;
     QPushButton *OKButton;
     QPushButton *CancelButton;
@@ -108,26 +110,39 @@ public:
         StatementsTab->setObjectName(QStringLiteral("StatementsTab"));
         formLayout_2 = new QFormLayout(StatementsTab);
         formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        formLayout_2->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
         formLayout_2->setContentsMargins(5, 11, -1, -1);
-        VerticalLayout_2 = new QVBoxLayout();
-        VerticalLayout_2->setObjectName(QStringLiteral("VerticalLayout_2"));
-        HorizontalLayout_2 = new QHBoxLayout();
-        HorizontalLayout_2->setSpacing(6);
-        HorizontalLayout_2->setObjectName(QStringLiteral("HorizontalLayout_2"));
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         ForwardOnlyCheckBox = new QCheckBox(StatementsTab);
         ForwardOnlyCheckBox->setObjectName(QStringLiteral("ForwardOnlyCheckBox"));
 
-        HorizontalLayout_2->addWidget(ForwardOnlyCheckBox);
-
-        ForwardOnlySpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        HorizontalLayout_2->addItem(ForwardOnlySpacer);
+        horizontalLayout_2->addWidget(ForwardOnlyCheckBox);
 
 
-        VerticalLayout_2->addLayout(HorizontalLayout_2);
+        formLayout_2->setLayout(0, QFormLayout::FieldRole, horizontalLayout_2);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        LimitResultsCheckBox = new QCheckBox(StatementsTab);
+        LimitResultsCheckBox->setObjectName(QStringLiteral("LimitResultsCheckBox"));
+
+        horizontalLayout->addWidget(LimitResultsCheckBox);
+
+        ResultCountSpinBox = new QSpinBox(StatementsTab);
+        ResultCountSpinBox->setObjectName(QStringLiteral("ResultCountSpinBox"));
+        ResultCountSpinBox->setMinimum(1);
+        ResultCountSpinBox->setMaximum(999999);
+        ResultCountSpinBox->setValue(2000);
+
+        horizontalLayout->addWidget(ResultCountSpinBox);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer);
 
 
-        formLayout_2->setLayout(0, QFormLayout::FieldRole, VerticalLayout_2);
+        formLayout_2->setLayout(2, QFormLayout::FieldRole, horizontalLayout);
 
         OptionsTabWidget->addTab(StatementsTab, QString());
 
@@ -156,7 +171,7 @@ public:
 
         retranslateUi(OptionsDialog);
 
-        OptionsTabWidget->setCurrentIndex(0);
+        OptionsTabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(OptionsDialog);
@@ -183,6 +198,10 @@ public:
         ForwardOnlyCheckBox->setToolTip(QApplication::translate("OptionsDialog", "Forward only mode can be (depending on the driver) more memory efficient since results do not need to be cached. It will also improve performance on some databases.", 0));
 #endif // QT_NO_TOOLTIP
         ForwardOnlyCheckBox->setText(QApplication::translate("OptionsDialog", "Use Forward Only", 0));
+#ifndef QT_NO_TOOLTIP
+        LimitResultsCheckBox->setToolTip(QApplication::translate("OptionsDialog", "Limits the select results to the given value and asks whether to fetch more", 0));
+#endif // QT_NO_TOOLTIP
+        LimitResultsCheckBox->setText(QApplication::translate("OptionsDialog", "Limit results", 0));
         OptionsTabWidget->setTabText(OptionsTabWidget->indexOf(StatementsTab), QApplication::translate("OptionsDialog", "Statements", 0));
         OKButton->setText(QApplication::translate("OptionsDialog", "OK", 0));
         CancelButton->setText(QApplication::translate("OptionsDialog", "Cancel", 0));

@@ -121,6 +121,9 @@
        <string>Statements</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_2">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       </property>
        <property name="leftMargin">
         <number>5</number>
        </property>
@@ -128,36 +131,56 @@
         <number>11</number>
        </property>
        <item row="0" column="1">
-        <layout class="QVBoxLayout" name="VerticalLayout_2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <layout class="QHBoxLayout" name="HorizontalLayout_2">
-           <property name="spacing">
-            <number>6</number>
+          <widget class="QCheckBox" name="ForwardOnlyCheckBox">
+           <property name="toolTip">
+            <string>Forward only mode can be (depending on the driver) more memory efficient since results do not need to be cached. It will also improve performance on some databases.</string>
            </property>
-           <item>
-            <widget class="QCheckBox" name="ForwardOnlyCheckBox">
-             <property name="toolTip">
-              <string>Forward only mode can be (depending on the driver) more memory efficient since results do not need to be cached. It will also improve performance on some databases.</string>
-             </property>
-             <property name="text">
-              <string>Use Forward Only</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="ForwardOnlySpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+           <property name="text">
+            <string>Use Forward Only</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QCheckBox" name="LimitResultsCheckBox">
+           <property name="toolTip">
+            <string>Limits the select results to the given value and asks whether to fetch more</string>
+           </property>
+           <property name="text">
+            <string>Limit results</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="ResultCountSpinBox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+           <property name="value">
+            <number>2000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>

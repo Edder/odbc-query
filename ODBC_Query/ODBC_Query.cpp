@@ -51,6 +51,7 @@ void ODBC_Query::InitGui()
 	ui.ToolBar->addWidget(ui.OpenConnectionsToolButton);
 	ui.OpenConnectionsToolButton->setMenu(ui.OpenConnectionsMenu);
 	ui.ToolBar->addWidget(ui.CloseAllConnectionsToolButton);
+	ui.ToolBar->addWidget(ui.RefreshTablesToolButton);
 	m_pLoadingAnimation = new QMovie(":/ODBC_Query/Resources/loading.gif");
 	m_pLoadingLabel = new QLabel(this);
 	m_pLoadingLabel->setMovie(m_pLoadingAnimation);
@@ -74,6 +75,8 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.AddConnectionToolButton, SIGNAL(clicked()), SLOT(NewConnection()));
 	QObject::connect(ui.CloseAllConnectionsAction, SIGNAL(triggered()), SLOT(CloseAllConnections()));
 	QObject::connect(ui.CloseAllConnectionsToolButton, SIGNAL(clicked()), SLOT(CloseAllConnections()));
+	QObject::connect(ui.RefreshTablesAction, SIGNAL(triggered()), SLOT(RefreshTables()));
+	QObject::connect(ui.RefreshTablesToolButton, SIGNAL(clicked()), SLOT(RefreshTables()));
 	QObject::connect(ui.ShowToolbarAction, SIGNAL(triggered()), SLOT(ShowToolbarTriggered()));
 	QObject::connect(ui.SyntaxHighlightingAction, SIGNAL(triggered()), SLOT(SyntaxHighlightingTriggered()));
 	QObject::connect(ui.SQLCommandTextEdit, SIGNAL(textChanged()), SLOT(SQLCommandTextChanged()));
@@ -92,6 +95,7 @@ void ODBC_Query::ResetGui()
 	ui.SQLCommandTextEdit->clear();
 	ui.SQLLogTextBrowser->clear();
 	ui.CurrentStatementLabel->setText("1");
+	ui.ResultCountLabel->setText("Rows:");
 	ui.StatusLabel->clear();
 	ui.SQLResultTableView->setModel(NULL);
 	if (m_lConnections.count() == 0)
@@ -101,6 +105,8 @@ void ODBC_Query::ResetGui()
 		ui.OpenConnectionsToolButton->setDisabled(true);
 		ui.CloseAllConnectionsAction->setDisabled(true);
 		ui.CloseAllConnectionsToolButton->setDisabled(true);
+		ui.RefreshTablesAction->setDisabled(true);
+		ui.RefreshTablesToolButton->setDisabled(true);
 	}
 	DisableQueryToolbar();
 
@@ -204,14 +210,9 @@ void ODBC_Query::ExecuteButtonClicked()
 			#endif
 			return;
 		}
-		//QStringList lQueries = sQuery.split(';');
-		//// send the signal to the execute thread
-		//for (int i = 0, count = lQueries.count(); i < count; i++)
-		//{
-		//	QString sNewQuery = lQueries.value(i);
-			if (!sQuery.isEmpty())
-				emit ExecuteQuery(sQuery);
-		//}
+
+		if (!sQuery.isEmpty())
+			emit ExecuteQuery(sQuery);
 
 		// disable execute button and start the loading animation
 		ui.ExecuteToolButton->setDisabled(true);
@@ -360,6 +361,12 @@ void ODBC_Query::NewConnection()
 
 			if (!ui.CloseAllConnectionsToolButton->isEnabled())
 				ui.CloseAllConnectionsToolButton->setEnabled(true);
+			
+			if (!ui.RefreshTablesAction->isEnabled())
+				ui.RefreshTablesAction->setEnabled(true);
+
+			if (!ui.RefreshTablesToolButton->isEnabled())
+				ui.RefreshTablesToolButton->setEnabled(true);
 
 			// set back to arrow cursor
 			QApplication::restoreOverrideCursor();
@@ -416,6 +423,19 @@ void ODBC_Query::CloseAllConnections(bool close)
 	ResetGui();
 
 	QMyLogging::getInstance()->WriteLog(INFORMATION, "Closed all connections");
+}
+
+void ODBC_Query::RefreshTables()
+{
+	if (m_pCurrentConnection != NULL)
+		m_pCurrentConnection->LoadTables();
+	else
+	{
+		QMyLogging::getInstance()->WriteLog(CRITICAL, QString("Null pointer at RefreshTables() in m_pCurrentConnection"));
+		#ifdef _DEBUG
+		qDebug() << QString("Null pointer at RefreshTables() in m_pCurrentConnection");
+		#endif
+	}
 }
 
 void ODBC_Query::ConnectionsClicked(QAction *action)

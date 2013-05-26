@@ -25,7 +25,6 @@ class ODBC_Query : public QMainWindow
 		void ResetGui();
 		void DisableQueryToolbar();
 		bool SwitchToConnection(ODBC_Connection* connection, QString newConnectionName);
-		void CloseAllConnections(bool close = false);
 		void CleanResultWindows();
 		bool eventFilter(QObject* object, QEvent* event);
 
@@ -44,6 +43,8 @@ class ODBC_Query : public QMainWindow
 		void TableItemExpanded(QTreeWidgetItem *item);
 		void Exit();
 		void NewConnection();
+		void RefreshTables();
+		void CloseAllConnections(bool close = false);
 		void ConnectionsClicked(QAction* action);
 		void ShowToolbarTriggered();
 		void SyntaxHighlightingTriggered();
