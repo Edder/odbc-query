@@ -3,6 +3,7 @@
 
 #include "precompiled.h"
 #include "ui_ODBC_Query.h"
+#include "ODBC_StandardItemModel.h"
 
 class ODBC_Connection : public QObject 
 {
@@ -21,6 +22,7 @@ class ODBC_Connection : public QObject
 		void RestoreGui();
 		void SaveGui();
 		void CloseConnection();
+		void StopExecution();
 
 		// Getter / Setter
 		QString GetConnectionName() { return m_sConnectionName; };
@@ -28,7 +30,8 @@ class ODBC_Connection : public QObject
 		QString GetDatabaseError() { return m_sDatabaseError; };
 		int GetCurrentHistoryIndex() { return m_iCurrentHistoryIndex; };
 		int GetResultTableCount() { return m_iResultTableCount; };
-		QStandardItemModel* GetSQLResultTable(int index) { return m_lSQLResultTables[index]; };
+		ODBC_StandardItemModel* GetSQLResultTable(int index) { return m_lSQLResultTables.count() > 0 ? m_lSQLResultTables[index] : NULL; };
+		ODBC_StandardItemModel* GetMainModel() { return m_pMainModel; };
 		bool IsConnectionOpen() { return m_db.isOpen(); };
 		void SetWaitForAnswer(bool waitForAnswer) { m_bWaitForAnswer = waitForAnswer; };
 		void SetContinueFetch(bool continueFetch) { m_bContinueFetch = continueFetch; };
@@ -48,7 +51,8 @@ class ODBC_Connection : public QObject
 		QString m_sLogText;
 		QString m_sDatabaseError;
 		QThread* m_pOwnThread;
-		QList<QStandardItemModel*> m_lSQLResultTables;
+		QList<ODBC_StandardItemModel*> m_lSQLResultTables;
+		ODBC_StandardItemModel* m_pMainModel;
 		bool m_bWaitForAnswer;
 		bool m_bContinueFetch;
 

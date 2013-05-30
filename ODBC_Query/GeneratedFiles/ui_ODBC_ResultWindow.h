@@ -27,6 +27,7 @@ public:
     QVBoxLayout *verticalLayout;
     QLabel *ResultCountLabel;
     ODBC_TableView *SQLResultTableView;
+    QLabel *DSNLabel;
 
     void setupUi(QWidget *ResultWindow)
     {
@@ -57,6 +58,11 @@ public:
 
         verticalLayout->addWidget(SQLResultTableView);
 
+        DSNLabel = new QLabel(ResultWindow);
+        DSNLabel->setObjectName(QStringLiteral("DSNLabel"));
+
+        verticalLayout->addWidget(DSNLabel);
+
 
         retranslateUi(ResultWindow);
 
@@ -67,6 +73,7 @@ public:
     {
         ResultWindow->setWindowTitle(QApplication::translate("ResultWindow", "Form", 0));
         ResultCountLabel->setText(QApplication::translate("ResultWindow", "Rows: ", 0));
+        DSNLabel->setText(QApplication::translate("ResultWindow", "DSN: ", 0));
     } // retranslateUi
 
 };

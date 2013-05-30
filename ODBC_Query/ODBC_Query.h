@@ -20,6 +20,9 @@ class ODBC_Query : public QMainWindow
 		ODBC_Query(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 		~ODBC_Query();
 
+	protected: 
+		virtual void closeEvent(QCloseEvent *event);
+
 	private:	
 		void InitGui();
 		void ResetGui();
@@ -27,6 +30,8 @@ class ODBC_Query : public QMainWindow
 		bool SwitchToConnection(ODBC_Connection* connection, QString newConnectionName);
 		void CleanResultWindows();
 		bool eventFilter(QObject* object, QEvent* event);
+		void ConnectConnectionSlots();
+		void DisconnectConnectionSlots();
 
 		Ui::ODBC_QueryClass ui;
 		ODBC_Connection* m_pCurrentConnection;
@@ -51,6 +56,7 @@ class ODBC_Query : public QMainWindow
 		void SQLCommandTextChanged();
 		void ShowOptions();
 		void ShowAbout();
+		void ExtractResult();
 
 	public slots:	
 		void Executed();
@@ -58,6 +64,7 @@ class ODBC_Query : public QMainWindow
 
 	signals:
 		void ExecuteQuery(QString query);
+		void StopExecution();
 };
 
 #endif // ODBC_QUERY_H

@@ -6,4 +6,4 @@
 #include <QtGui>
 #include <QtCore>
 #include <QtSql>
-#include <QMyLogging.h>
+#include <Logging.h>

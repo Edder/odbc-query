@@ -55,6 +55,13 @@
      </attribute>
     </widget>
    </item>
+   <item>
+    <widget class="QLabel" name="DSNLabel">
+     <property name="text">
+      <string>DSN: </string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>

@@ -4,7 +4,6 @@ class ODBC_CustomSyntaxHighlighter: public QSyntaxHighlighter
 {   
 	public:    
 		ODBC_CustomSyntaxHighlighter(QTextDocument* document): QSyntaxHighlighter(document) { };
-		~ODBC_CustomSyntaxHighlighter() { };
 	
 		void SetActive(bool active) { m_bActive = active; };
 		bool IsActive() { return m_bActive; };

@@ -115,6 +115,9 @@
     <ClInclude Include="ODBC_ResultWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ODBC_StandardItemModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ODBC_Query.h">
