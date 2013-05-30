@@ -15,7 +15,22 @@ ODBC_Connection::ODBC_Connection(Ui::ODBC_QueryClass ui, QThread *ownThread)
 
 ODBC_Connection::~ODBC_Connection()
 {
+	// clean result tables
+	for (int i = 0; i < m_lSQLResultTables.count(); i++)
+	{
+		ODBC_StandardItemModel* pModel = m_lSQLResultTables.at(i);
+		if (pModel != NULL)
+		{
+			if (!pModel->IsExtracted())
+			{
+				delete pModel;
+				pModel = NULL;
 
+				m_lSQLResultTables.removeAt(i);
+				i--;
+			}
+		}
+	}
 }
 
 bool ODBC_Connection::ConnectToDatabase(QString database, QString user, QString password)
@@ -154,6 +169,23 @@ void ODBC_Connection::LoadTableColumns(QTreeWidgetItem *item)
 
 void ODBC_Connection::ExecuteQuery(QString query)
 {
+	// clean result tables
+	for (int i = 0; i < m_lSQLResultTables.count(); i++)
+	{
+		ODBC_StandardItemModel* pModel = m_lSQLResultTables.at(i);
+		if (pModel != NULL)
+		{
+			if (!pModel->IsExtracted())
+			{
+				delete pModel;
+				pModel = NULL;
+
+				m_lSQLResultTables.removeAt(i);
+				i--;
+			}
+		}
+	}
+
 	if (mQuery.isActive())
 		mQuery.finish();
 
@@ -179,7 +211,7 @@ void ODBC_Connection::ExecuteQuery(QString query)
 			{
 				QSqlRecord sqlRecord = mQuery.record();
 				int columns = sqlRecord.count();
-				QStandardItemModel* model = new QStandardItemModel();
+				ODBC_StandardItemModel* model = new ODBC_StandardItemModel();
 				model->setColumnCount(columns);
 
 				QStringList headerLabels;
@@ -216,7 +248,6 @@ void ODBC_Connection::ExecuteQuery(QString query)
 				}
 				m_lSQLResultTables.append(model);
 				m_iResultTableCount++;
-
 			} 
 			while (mQuery.nextResult());
 		}
@@ -244,7 +275,7 @@ void ODBC_Connection::ExecuteQuery(QString query)
 		else
 			m_slStatementHistory << query;
 	}	
-	emit Executed();
+	emit Executed(); 
 }
 
 void ODBC_Connection::HandleLeftRightButton(bool directionRight)
@@ -387,7 +418,6 @@ void ODBC_Connection::CloseConnection()
 		if (m_pOwnThread->isRunning())
 			m_pOwnThread->quit();
 	}
-
 
     m_db.close();
 	m_db = QSqlDatabase();

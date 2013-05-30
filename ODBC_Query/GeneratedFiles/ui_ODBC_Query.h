@@ -66,6 +66,7 @@ public:
     QLabel *CurrentStatementLabel;
     QToolButton *RightToolButton;
     QFrame *Line_2;
+    QToolButton *ExtractToolButton;
     QSpacerItem *HorizontalSpacer;
     QTextEdit *SQLCommandTextEdit;
     QTextBrowser *SQLLogTextBrowser;
@@ -302,6 +303,17 @@ public:
 
         HorizontalLayout_3->addWidget(Line_2);
 
+        ExtractToolButton = new QToolButton(horizontalLayoutWidget);
+        ExtractToolButton->setObjectName(QStringLiteral("ExtractToolButton"));
+        ExtractToolButton->setEnabled(false);
+        QIcon icon11;
+        icon11.addFile(QStringLiteral(":/ODBC_Query/Resources/expand.png"), QSize(), QIcon::Normal, QIcon::Off);
+        ExtractToolButton->setIcon(icon11);
+        ExtractToolButton->setIconSize(QSize(20, 20));
+        ExtractToolButton->setAutoRaise(true);
+
+        HorizontalLayout_3->addWidget(ExtractToolButton);
+
         HorizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         HorizontalLayout_3->addItem(HorizontalSpacer);
@@ -417,6 +429,10 @@ public:
         LeftToolButton->setText(QApplication::translate("ODBC_QueryClass", "left", 0));
         CurrentStatementLabel->setText(QApplication::translate("ODBC_QueryClass", "1", 0));
         RightToolButton->setText(QApplication::translate("ODBC_QueryClass", "right", 0));
+#ifndef QT_NO_TOOLTIP
+        ExtractToolButton->setToolTip(QApplication::translate("ODBC_QueryClass", "Copies the current result to a separate window", 0));
+#endif // QT_NO_TOOLTIP
+        ExtractToolButton->setText(QString());
         FileMenu->setTitle(QApplication::translate("ODBC_QueryClass", "File", 0));
         ConnectionsMenu->setTitle(QApplication::translate("ODBC_QueryClass", "Connections", 0));
 #ifndef QT_NO_TOOLTIP

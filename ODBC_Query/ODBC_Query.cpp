@@ -82,6 +82,7 @@ void ODBC_Query::InitGui()
 	QObject::connect(ui.SQLCommandTextEdit, SIGNAL(textChanged()), SLOT(SQLCommandTextChanged()));
 	QObject::connect(ui.OptionsAction, SIGNAL(triggered()), SLOT(ShowOptions()));
 	QObject::connect(ui.AboutAction, SIGNAL(triggered()), SLOT(ShowAbout()));
+	QObject::connect(ui.ExtractToolButton, SIGNAL(clicked()), SLOT(ExtractResult()));
 
 	// initialize options menu
 	ODBC_OptionsDialog::getInstance()->Init();
@@ -126,6 +127,9 @@ void ODBC_Query::DisableQueryToolbar()
 
 	if (ui.LeftToolButton->isEnabled())
 		ui.LeftToolButton->setDisabled(true);
+
+	if (ui.ExtractToolButton->isEnabled())
+		ui.ExtractToolButton->setDisabled(true);
 }
 
 bool ODBC_Query::SwitchToConnection(ODBC_Connection *connection, QString newConnectionName)
@@ -182,6 +186,8 @@ void ODBC_Query::CleanResultWindows()
 		{
 			if (!pResultWindow->isVisible())
 			{
+				pResultWindow->GetModel()->SetExtracted(false);
+				pResultWindow->Clean();
 				delete pResultWindow;
 				pResultWindow = NULL;
 
@@ -190,6 +196,11 @@ void ODBC_Query::CleanResultWindows()
 			}
 		}
 	}
+}
+
+void ODBC_Query::closeEvent(QCloseEvent *event)
+{
+	Exit();
 }
 
 // <SLOTS>
@@ -610,7 +621,7 @@ void ODBC_Query::Executed()
 		if (iResultTableCount > 0)
 		{
 			// get the model
-			QStandardItemModel *pModel = m_pCurrentConnection->GetSQLResultTable(0);
+			ODBC_StandardItemModel *pModel = m_pCurrentConnection->GetSQLResultTable(0);
 			if (pModel != NULL)
 			{
 				ui.ResultCountLabel->setText(QString("Rows: %1").arg(pModel->rowCount()));
@@ -620,6 +631,7 @@ void ODBC_Query::Executed()
 				ui.SQLResultTableView->sortByColumn(-1, Qt::AscendingOrder);
 				ui.SQLResultTableView->verticalScrollBar()->setSliderPosition(ui.SQLResultTableView->verticalScrollBar()->minimum());
 				ui.SQLResultTableView->horizontalScrollBar()->setSliderPosition(ui.SQLResultTableView->horizontalScrollBar()->minimum());
+				ui.ExtractToolButton->setEnabled(true);
 
 				CleanResultWindows();
 
@@ -627,12 +639,22 @@ void ODBC_Query::Executed()
 				{
 					for (int i = 1; i < iResultTableCount; i++)
 					{
+						ODBC_StandardItemModel *pModel2 = m_pCurrentConnection->GetSQLResultTable(i);
 						ODBC_ResultWindow* pResultWindow = new ODBC_ResultWindow();
 						m_lResultWindows.append(pResultWindow);
-						pResultWindow->Init(i, m_pCurrentConnection->GetSQLResultTable(i));
+
+						pModel2->SetExtracted(true);
+						pResultWindow->Init((i + 1), pModel2);
 						pResultWindow->show();
 					}
 				}
+			}
+			else
+			{
+				QMyLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at Executed() in pModel");
+				#ifdef _DEBUG
+				qDebug() << "Null pointer at Executed() in pModel";
+				#endif
 			}
 		}
 
@@ -675,6 +697,47 @@ void ODBC_Query::ShowOptions()
 void ODBC_Query::ShowAbout()
 {
 	QMessageBox::about(this, QString("About %1").arg(APPLICATION_NAME), QString("<b>%1 (build: %2)</b><br/><br/>written by Daniel Rosenauer<br/><br/>mail: <a href='mailto:d.rosenauer@googlemail.com'>d.rosenauer@gmail.com</a><br/>github: <a href='https://github.com/Edder/odbc-query'>project page</a><br/><br/>linked against Qt %3").arg(APPLICATION_NAME, QString().setNum(REVISION), QT_VERSION_STR));
+}
+
+void ODBC_Query::ExtractResult()
+{
+	ODBC_StandardItemModel *pModel = m_pCurrentConnection->GetSQLResultTable(0);
+	if (pModel != NULL)
+	{
+		ODBC_ResultWindow* pResultWindow = NULL;
+
+		// check if there is already a ResultWindows with that Model
+		bool bFound = false;
+		for (int i = 0; i < m_lResultWindows.count(); i++)
+		{
+			pResultWindow = m_lResultWindows.at(i);
+			if (pResultWindow != NULL)
+			{
+				if (pResultWindow->GetModel() == pModel)
+				{
+					pResultWindow->raise();
+					bFound = true;
+				}
+			}
+		}
+
+		if (!bFound)
+		{
+			pResultWindow = new ODBC_ResultWindow();
+			m_lResultWindows.append(pResultWindow);
+
+			pModel->SetExtracted(true);
+			pResultWindow->Init(1, pModel);
+			pResultWindow->show();
+		}
+	}
+	else
+	{
+		QMyLogging::getInstance()->WriteLog(CRITICAL, "Null pointer at ExtractResult() in pModel");
+		#ifdef _DEBUG
+		qDebug() << "Null pointer at ExtractResult() in pModel";
+		#endif
+	}
 }
 // </SLOTS>
 

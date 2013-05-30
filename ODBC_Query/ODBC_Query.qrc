@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/ODBC_Query">
+    <file>Resources/expand.png</file>
     <file>Resources/table_refresh.png</file>
     <file>Resources/play_icon.png</file>
     <file>Resources/left_arrow.png</file>
