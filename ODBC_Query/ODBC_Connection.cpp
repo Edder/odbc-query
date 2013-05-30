@@ -187,8 +187,24 @@ void ODBC_Connection::ExecuteQuery(QString query)
 					headerLabels.append(sqlRecord.fieldName(i));
 				model->setHorizontalHeaderLabels(headerLabels);
 		
+				int iResultCount = 0;
+				bool bLimitResults = ODBC_OptionsDialog::getInstance()->LimitResults();
+				int iResultLimit = ODBC_OptionsDialog::getInstance()->GetResultLimitCount();
 				while (mQuery.next())
 				{
+					if (bLimitResults)
+					{
+						if (iResultCount == iResultLimit)
+						{
+							m_bWaitForAnswer = true;
+							emit LimitReached();
+							while (m_bWaitForAnswer)
+								QThread::sleep(1);
+							if (!m_bContinueFetch)
+								break;
+							bLimitResults = false;
+						}
+					}
 					QList<QStandardItem*> itemList;
 					for (int column = 0; column < columns; column++) 
 					{
@@ -196,6 +212,7 @@ void ODBC_Connection::ExecuteQuery(QString query)
 						itemList.append(item);
 					}
 					model->appendRow(itemList);
+					iResultCount++;
 				}
 				m_lSQLResultTables.append(model);
 				m_iResultTableCount++;

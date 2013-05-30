@@ -16,7 +16,9 @@ class ODBC_OptionsDialog : public QDialog
 		
 		// Getter / Setter
 		int GetConnectionTimeout() { return m_iConnectionTimeout; };
-		bool ForwardOnly() {return m_bForwardOnly; };
+		bool ForwardOnly() { return m_bForwardOnly; };
+		bool LimitResults() { return m_bLimitResults; };
+		int GetResultLimitCount() { return m_iResultCount; };
 
 	private:
 		ODBC_OptionsDialog();

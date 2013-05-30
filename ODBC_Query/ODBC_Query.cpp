@@ -302,6 +302,7 @@ void ODBC_Query::NewConnection()
 			m_pCurrentConnection->SaveGui();
 			QObject::disconnect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
 			QObject::disconnect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
+			QObject::disconnect(m_pCurrentConnection, SIGNAL(LimitReached()), this, SLOT(LimitReached()));
 		}
 		m_pCurrentConnection = NULL;
 		QThread *pThread = new QThread(this);
@@ -309,6 +310,7 @@ void ODBC_Query::NewConnection()
 		m_pCurrentConnection = new ODBC_Connection(ui, pThread);
 		QObject::connect(this, SIGNAL(ExecuteQuery(QString)), m_pCurrentConnection, SLOT(ExecuteQuery(QString)));
 		QObject::connect(m_pCurrentConnection, SIGNAL(Executed()), this, SLOT(Executed()));
+		QObject::connect(m_pCurrentConnection, SIGNAL(LimitReached()), this, SLOT(LimitReached()));
 		m_pCurrentConnection->moveToThread(pThread);
 		pThread->start();
 		m_pCurrentConnection->OpenConnection(sNewConnectionName);
@@ -650,6 +652,19 @@ void ODBC_Query::Executed()
 	ui.ExecuteToolButton->setEnabled(true);
 	m_pLoadingAnimation->stop();
 	m_pLoadingLabel->setHidden(true);
+}
+
+void ODBC_Query::LimitReached()
+{
+	if (m_pCurrentConnection != NULL)
+	{	
+		if (QMessageBox::question(NULL, "Result limit", QString("Currently %1 rows are fetched, do you want to continue fetching?").arg(ODBC_OptionsDialog::getInstance()->GetResultLimitCount()), QMessageBox::Yes, QMessageBox::No) != QMessageBox::Yes)
+			m_pCurrentConnection->SetContinueFetch(false);
+		else
+			m_pCurrentConnection->SetContinueFetch(true);
+
+		m_pCurrentConnection->SetWaitForAnswer(false);
+	}
 }
 
 void ODBC_Query::ShowOptions()

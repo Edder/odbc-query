@@ -502,7 +502,7 @@
   </action>
   <action name="NewConnectionAction">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="odbc_query.qrc">
@@ -576,6 +576,9 @@
    </property>
   </action>
   <action name="RefreshTablesAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="odbc_query.qrc">
      <normaloff>:/ODBC_Query/Resources/table_refresh.png</normaloff>:/ODBC_Query/Resources/table_refresh.png</iconset>

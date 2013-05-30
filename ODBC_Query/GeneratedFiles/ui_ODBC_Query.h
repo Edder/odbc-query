@@ -94,7 +94,7 @@ public:
         ExitAction->setIcon(icon1);
         NewConnectionAction = new QAction(ODBC_QueryClass);
         NewConnectionAction->setObjectName(QStringLiteral("NewConnectionAction"));
-        NewConnectionAction->setEnabled(false);
+        NewConnectionAction->setEnabled(true);
         QIcon icon2;
         icon2.addFile(QStringLiteral(":/ODBC_Query/Resources/database_add.png"), QSize(), QIcon::Normal, QIcon::Off);
         NewConnectionAction->setIcon(icon2);
@@ -126,6 +126,7 @@ public:
         AboutAction->setIcon(icon5);
         RefreshTablesAction = new QAction(ODBC_QueryClass);
         RefreshTablesAction->setObjectName(QStringLiteral("RefreshTablesAction"));
+        RefreshTablesAction->setEnabled(false);
         QIcon icon6;
         icon6.addFile(QStringLiteral(":/ODBC_Query/Resources/table_refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
         RefreshTablesAction->setIcon(icon6);

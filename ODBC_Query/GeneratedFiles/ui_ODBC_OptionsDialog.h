@@ -91,6 +91,12 @@ public:
 
         TimeoutSpinBox = new QSpinBox(ConnectionTab);
         TimeoutSpinBox->setObjectName(QStringLiteral("TimeoutSpinBox"));
+        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(TimeoutSpinBox->sizePolicy().hasHeightForWidth());
+        TimeoutSpinBox->setSizePolicy(sizePolicy1);
+        TimeoutSpinBox->setMinimumSize(QSize(0, 0));
         TimeoutSpinBox->setMaximum(300);
 
         HorizontalLayout->addWidget(TimeoutSpinBox);
@@ -131,6 +137,9 @@ public:
 
         ResultCountSpinBox = new QSpinBox(StatementsTab);
         ResultCountSpinBox->setObjectName(QStringLiteral("ResultCountSpinBox"));
+        sizePolicy1.setHeightForWidth(ResultCountSpinBox->sizePolicy().hasHeightForWidth());
+        ResultCountSpinBox->setSizePolicy(sizePolicy1);
+        ResultCountSpinBox->setMinimumSize(QSize(60, 0));
         ResultCountSpinBox->setMinimum(1);
         ResultCountSpinBox->setMaximum(999999);
         ResultCountSpinBox->setValue(2000);
@@ -171,7 +180,7 @@ public:
 
         retranslateUi(OptionsDialog);
 
-        OptionsTabWidget->setCurrentIndex(1);
+        OptionsTabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(OptionsDialog);

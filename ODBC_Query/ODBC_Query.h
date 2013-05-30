@@ -54,6 +54,7 @@ class ODBC_Query : public QMainWindow
 
 	public slots:	
 		void Executed();
+		void LimitReached();
 
 	signals:
 		void ExecuteQuery(QString query);

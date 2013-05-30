@@ -30,6 +30,8 @@ class ODBC_Connection : public QObject
 		int GetResultTableCount() { return m_iResultTableCount; };
 		QStandardItemModel* GetSQLResultTable(int index) { return m_lSQLResultTables[index]; };
 		bool IsConnectionOpen() { return m_db.isOpen(); };
+		void SetWaitForAnswer(bool waitForAnswer) { m_bWaitForAnswer = waitForAnswer; };
+		void SetContinueFetch(bool continueFetch) { m_bContinueFetch = continueFetch; };
 
 	private:
 		QString m_sConnectionName;
@@ -47,12 +49,15 @@ class ODBC_Connection : public QObject
 		QString m_sDatabaseError;
 		QThread* m_pOwnThread;
 		QList<QStandardItemModel*> m_lSQLResultTables;
+		bool m_bWaitForAnswer;
+		bool m_bContinueFetch;
 
 	public slots:
 		void ExecuteQuery(QString query);
 		
 	signals:
 		void Executed();
+		void LimitReached();
 };
 
 #endif // ODBC_CONNECTION_H

@@ -50,7 +50,6 @@ void ODBC_OptionsDialog::Init()
 		Settings.setValue("limitresults", true);
 		m_bLimitResults = true;
 	}
-	Settings.endGroup();
 	if (Settings.contains("resultcount")) // get the value
 		m_iResultCount = Settings.value("resultcount").toInt();
 	else // set the default value
@@ -63,6 +62,7 @@ void ODBC_OptionsDialog::Init()
 	ui.TimeoutSpinBox->setValue(m_iConnectionTimeout);
 	ui.ForwardOnlyCheckBox->setChecked(m_bForwardOnly);
 	ui.LimitResultsCheckBox->setChecked(m_bLimitResults);
+	ui.ResultCountSpinBox->setValue(m_iResultCount);
 
 	QObject::connect(ui.OKButton, SIGNAL(clicked()), SLOT(OKButtonClicked()));
 	QObject::connect(ui.CancelButton, SIGNAL(clicked()), SLOT(CancelButtonClicked()));
@@ -79,12 +79,16 @@ void ODBC_OptionsDialog::ApplyButtonClicked()
 {
 	m_iConnectionTimeout = ui.TimeoutSpinBox->value();
 	m_bForwardOnly = ui.ForwardOnlyCheckBox->isChecked();
+	m_bLimitResults = ui.LimitResultsCheckBox->isChecked();
+	m_iResultCount = ui.ResultCountSpinBox->value();
 	QSettings Settings("settings.ini", QSettings::IniFormat, this);
 	Settings.beginGroup("connection");
 	Settings.setValue("timeout", m_iConnectionTimeout);
 	Settings.endGroup();
 	Settings.beginGroup("statements");
 	Settings.setValue("forwardonly", m_bForwardOnly);
+	Settings.setValue("limitresults", m_bLimitResults);
+	Settings.setValue("resultcount", m_iResultCount);
 	Settings.endGroup();
 }
 
