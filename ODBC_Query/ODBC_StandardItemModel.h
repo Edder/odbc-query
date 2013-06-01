@@ -15,7 +15,6 @@ class ODBC_StandardItemModel : public QStandardItemModel
 	private:
 		bool m_bExtracted;
 		bool m_bMainModel;
-
 };
 
 #endif // ODBC_STANDARDITEMMODEL_H
