@@ -740,6 +740,7 @@ void ODBC_Query::ExtractResult()
 			{
 				if (pResultWindow->GetModel() == pModel)
 				{
+					pResultWindow->show();
 					pResultWindow->raise();
 					bFound = true;
 				}
